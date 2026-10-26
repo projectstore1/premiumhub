@@ -67,6 +67,42 @@
     <main class="admin-content">
       <div style="display:grid;grid-template-columns:1fr;gap:24px;">
 
+        <!-- Currency & Customer Support Configuration (Telegram & WhatsApp) -->
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--admin-primary),var(--admin-dark-purple));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;">💬</div>
+            <div>
+              <h3 style="font-size:1.15rem;font-weight:800;color:var(--admin-text-main);">Exchange Rate & Customer Support Setup</h3>
+              <div style="font-size:0.8rem;color:var(--admin-text-sub);">Configure 1$ = Naira rate and direct Telegram/WhatsApp support channels</div>
+            </div>
+          </div>
+          <p style="font-size:0.85rem;color:var(--admin-text-sub);margin-bottom:16px;">
+            Customers will see products in USDT with automatic Naira conversion. They can click the Support button on any page to chat with you directly on Telegram or WhatsApp.
+          </p>
+          <form id="support-settings-form">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;margin-bottom:16px;">
+              <div class="form-group">
+                <label class="form-label">USD to Naira Rate (1 USDT / $ = ? NGN) *</label>
+                <input type="number" id="usd-rate-input" class="form-input" value="1440" step="0.01" min="1" required>
+                <small style="color:var(--admin-text-sub);font-size:0.8rem;">Default: 1440. All products auto-calculate Naira prices using this rate.</small>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Support Telegram Username / Link *</label>
+                <input type="text" id="telegram-support-input" class="form-input" placeholder="e.g. MD_ABDULLAH or https://t.me/MD_ABDULLAH" required>
+                <small style="color:var(--admin-text-sub);font-size:0.8rem;">Official Telegram username or channel link for customer inquiries.</small>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Support WhatsApp Number / Link *</label>
+                <input type="text" id="whatsapp-support-input" class="form-input" placeholder="e.g. +2348000000000 or https://wa.me/2348000000000" required>
+                <small style="color:var(--admin-text-sub);font-size:0.8rem;">Official WhatsApp number with country code for live customer chat.</small>
+              </div>
+            </div>
+            <button type="submit" id="save-support-btn" class="btn btn-primary btn-sm">
+              Save Support & Exchange Rate Settings
+            </button>
+          </form>
+        </div>
+
         <!-- Announcement Notice Box Settings -->
         <div class="card">
           <h3 style="font-size:1.15rem;font-weight:800;color:var(--admin-text-main);margin-bottom:6px;">Store Announcement Notice Bar</h3>

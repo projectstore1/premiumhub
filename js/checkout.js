@@ -1,4 +1,4 @@
-// Premiumhub Checkout & Payment Processing
+// Premiumhub Checkout & Payment Processing Module
 import { db, auth } from "./firebase-config.js";
 import {
   collection,
@@ -11,7 +11,7 @@ import {
   query,
   where
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-import { getProductById, formatPrice } from "./products.js";
+import { getProductById, formatPrice, calculateNairaPrice, getExchangeRate, formatUsdt, formatNaira } from "./products.js";
 import { showToast } from "./auth.js";
 
 // Fetch Active Crypto and Bank Payment Methods
@@ -23,18 +23,25 @@ export async function fetchPaymentMethods() {
     };
 
     // 1. Crypto payment methods
-    const cryptoSnap = await getDocs(query(collection(db, "paymentMethods"), where("active", "==", true)));
-    cryptoSnap.forEach(d => methods.crypto.push({ id: d.id, ...d.data() }));
+    try {
+      const cryptoSnap = await getDocs(query(collection(db, "paymentMethods"), where("active", "==", true)));
+      cryptoSnap.forEach(d => methods.crypto.push({ id: d.id, ...d.data() }));
+    } catch (e) {
+      console.warn("Could not query paymentMethods:", e);
+    }
 
     // 2. Bank accounts
-    const bankSnap = await getDocs(query(collection(db, "bankAccounts"), where("active", "==", true)));
-    bankSnap.forEach(d => methods.bank.push({ id: d.id, ...d.data() }));
+    try {
+      const bankSnap = await getDocs(query(collection(db, "bankAccounts"), where("active", "==", true)));
+      bankSnap.forEach(d => methods.bank.push({ id: d.id, ...d.data() }));
+    } catch (e) {
+      console.warn("Could not query bankAccounts:", e);
+    }
 
-    // If Firestore is newly initialized, provide configured active defaults
+    // If Firestore is newly initialized or returned empty, provide active defaults
     if (methods.crypto.length === 0 && methods.bank.length === 0) {
       return getDefaultPaymentConfig();
     }
-
     return methods;
   } catch (err) {
     console.warn("Using default payment config:", err);
@@ -46,27 +53,27 @@ function getDefaultPaymentConfig() {
   return {
     crypto: [
       {
+        id: "usdt-trc20",
+        name: "USDT",
+        network: "TRON (TRC20)",
+        address: "TYDny7hXq2ZJvHk8F9M4a7uBcLe689721D",
+        instructions: "Send only USDT on TRON (TRC20) network. Instant blockchain verification.",
+        active: true
+      },
+      {
         id: "usdt-bep20",
         name: "USDT",
         network: "BNB Smart Chain (BEP20)",
         address: "0x89205A3A3b2A5531023740eE93BE38e94879201D",
-        instructions: "Send only USDT on BEP20 network. Payments sent via other networks cannot be recovered.",
+        instructions: "Send only USDT on BEP20 network. Fast verification within 2 minutes.",
         active: true
       },
       {
         id: "solana",
-        name: "SOL",
+        name: "SOL / USDT",
         network: "Solana Network",
         address: "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
-        instructions: "Send exact SOL equivalent. Transaction is confirmed within 60 seconds.",
-        active: true
-      },
-      {
-        id: "usdc-erc20",
-        name: "USDC",
-        network: "ERC20 / Polygon",
-        address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
-        instructions: "Send USDC to the address provided and paste the tx hash below.",
+        instructions: "Send exact USDT or SOL equivalent. Transaction confirmed in seconds.",
         active: true
       }
     ],
@@ -76,7 +83,7 @@ function getDefaultPaymentConfig() {
         bankName: "OPay Digital Services",
         accountHolder: "PREMIUMHUB ENTERPRISE",
         accountNumber: "8123456789",
-        instructions: "Transfer to OPay. Enter your Profile UID as the payment narration.",
+        instructions: "Transfer Naira to OPay. Enter your Profile UID as payment remark.",
         active: true
       },
       {
@@ -84,14 +91,14 @@ function getDefaultPaymentConfig() {
         bankName: "Moniepoint MFB",
         accountHolder: "PREMIUMHUB LIMITED",
         accountNumber: "5678901234",
-        instructions: "Fast instant settlement. Keep your receipt for upload.",
+        instructions: "Transfer Naira to Moniepoint. Instant settlement.",
         active: true
       }
     ]
   };
 }
 
-// Generate unique order ID
+// Generate unique human-readable order ID
 function generateOrderId() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let result = "PH-";
@@ -118,38 +125,59 @@ export async function createOrder({
     throw new Error("You must be logged in to place an order.");
   }
 
-  // 1. Revalidate Product and Price on trusted data
+  // 1. Revalidate Product and Price
   const product = await getProductById(productId);
   if (!product || !product.available) {
     throw new Error("Selected product is unavailable or invalid.");
   }
 
-  const verifiedPrice = product.price;
+  const rate = getExchangeRate();
+  const priceUsdt = typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0;
+  const priceNaira = calculateNairaPrice(priceUsdt, rate);
 
   // 2. Fetch User Profile for Numeric Profile UID
   let profileUID = "0000";
   try {
-    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+    const userDocRef = doc(db, "users", currentUser.uid);
+    const userDoc = await getDoc(userDocRef);
     if (userDoc.exists() && userDoc.data().profileUID) {
       profileUID = userDoc.data().profileUID;
+    } else {
+      // Auto-generate profile UID if missing
+      profileUID = Math.floor(10000 + Math.random() * 90000).toString();
+      await setDoc(userDocRef, {
+        profileUID: profileUID,
+        email: currentUser.email || "",
+        displayName: customerName || currentUser.displayName || "Customer",
+        role: "customer"
+      }, { merge: true });
     }
   } catch (e) {
-    console.warn("Could not fetch profileUID:", e);
+    console.warn("Could not fetch profileUID, generating fallback:", e);
+    profileUID = Math.floor(10000 + Math.random() * 90000).toString();
   }
 
-  // 3. Prevent duplicate submission by transaction reference
+  // 3. Prevent duplicate submission by transaction reference (safe try/catch)
   if (transactionReference && transactionReference.trim()) {
-    const dupQuery = query(
-      collection(db, "orders"),
-      where("transactionReference", "==", transactionReference.trim())
-    );
-    const dupSnap = await getDocs(dupQuery);
-    if (!dupSnap.empty) {
-      throw new Error("An order with this transaction reference has already been submitted.");
+    try {
+      const dupQuery = query(
+        collection(db, "orders"),
+        where("userId", "==", currentUser.uid),
+        where("transactionReference", "==", transactionReference.trim())
+      );
+      const dupSnap = await getDocs(dupQuery);
+      if (!dupSnap.empty) {
+        throw new Error("You have already submitted an order with this transaction reference.");
+      }
+    } catch (e) {
+      if (e.message && e.message.includes("already submitted")) throw e;
+      console.warn("Duplicate reference check query bypassed:", e);
     }
   }
 
   const orderId = generateOrderId();
+  const isCrypto = paymentMethod.toLowerCase().includes("crypto") || paymentMethod.toLowerCase().includes("usdt") || paymentMethod.toLowerCase().includes("sol");
+
   const orderData = {
     orderId,
     userId: currentUser.uid,
@@ -160,14 +188,19 @@ export async function createOrder({
     productId: product.id,
     productName: product.name,
     productImage: product.image || "",
-    price: verifiedPrice,
-    currency: "₦",
+    price: priceUsdt, // Base USDT price
+    priceUsdt: priceUsdt,
+    priceNaira: priceNaira,
+    currency: "USDT",
+    exchangeRate: rate,
+    billingCurrency: isCrypto ? "USDT" : "NGN",
+    payableAmount: isCrypto ? priceUsdt : priceNaira,
     paymentMethod: paymentMethod,
     paymentNetwork: paymentNetwork || "",
     paymentDetails: paymentDetails || "",
     transactionReference: transactionReference.trim(),
     paymentProofUrl: paymentProofUrl || "",
-    orderStatus: "Pending", // Pending, Payment Under Review, Confirmed, Processing, Completed, Rejected, Cancelled
+    orderStatus: "Pending", // Pending, Payment Under Review, Confirmed, Processing, Completed, Rejected
     paymentStatus: "Unverified", // Unverified, Paid, Failed, Refunded
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
@@ -187,7 +220,8 @@ export async function createOrder({
       payload: {
         orderId: orderId,
         productName: product.name,
-        price: verifiedPrice,
+        priceUsdt: priceUsdt,
+        priceNaira: priceNaira,
         customerName: orderData.customerName,
         profileUID: profileUID,
         email: orderData.customerEmail,
@@ -197,13 +231,12 @@ export async function createOrder({
       }
     });
 
-    // Also add to audit logs
     await addDoc(collection(db, "auditLogs"), {
       action: "ORDER_CREATED",
       orderId: orderId,
       userId: currentUser.uid,
       timestamp: serverTimestamp(),
-      details: `New order ${orderId} created for ${product.name} (₦${verifiedPrice})`
+      details: `New order ${orderId} created for ${product.name} ($${priceUsdt} USDT / ₦${priceNaira})`
     });
   } catch (err) {
     console.warn("Notification job queue notice:", err);

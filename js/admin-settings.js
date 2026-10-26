@@ -14,10 +14,54 @@ import {
 import { showToast } from "./auth.js";
 
 export async function initAdminSettingsPage() {
+  // Support & Exchange Rate Form Handler
+  document.getElementById("support-settings-form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const saveBtn = document.getElementById("save-support-btn");
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving...";
+    }
+    const rate = parseFloat(document.getElementById("usd-rate-input").value) || 1440;
+    const tg = document.getElementById("telegram-support-input").value.trim();
+    const wa = document.getElementById("whatsapp-support-input").value.trim();
+
+    const tgUrl = tg.startsWith("http") ? tg : ("https://t.me/" + tg.replace("@", ""));
+    const cleanWaDigits = wa.replace(/[^0-9]/g, "");
+    const waUrl = wa.startsWith("http") ? wa : ("https://wa.me/" + cleanWaDigits);
+
+    try {
+      await setDoc(doc(db, "siteSettings", "support"), {
+        usdToNairaRate: rate,
+        telegram: tg,
+        telegramUrl: tgUrl,
+        whatsapp: wa,
+        whatsappUrl: waUrl,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      await setDoc(doc(db, "siteSettings", "currency"), {
+        usdToNairaRate: rate,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      setExchangeRate(rate);
+      showToast("Support & Exchange Rate settings saved successfully!", "success");
+    } catch (err) {
+      showToast(err.message || "Failed to save settings", "error");
+    } finally {
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Save Support & Exchange Rate Settings";
+      }
+    }
+  });
+
   await loadPaymentMethods();
   await loadBanners();
   await loadNoticeSettings();
   await loadGeneralSettings();
+  await loadSupportSettings();
 
   // 1. Notice Settings Form
   document.getElementById("notice-settings-form")?.addEventListener("submit", async (e) => {
@@ -297,4 +341,22 @@ async function loadGeneralSettings() {
       }
     }
   } catch (e) { console.error(e); }
+}
+
+
+async function loadSupportSettings() {
+  try {
+    const snap = await getDoc(doc(db, "siteSettings", "support"));
+    if (snap.exists()) {
+      const data = snap.data();
+      const rateEl = document.getElementById("usd-rate-input");
+      const tgEl = document.getElementById("telegram-support-input");
+      const waEl = document.getElementById("whatsapp-support-input");
+      if (rateEl && data.usdToNairaRate) rateEl.value = data.usdToNairaRate;
+      if (tgEl && data.telegram) tgEl.value = data.telegram;
+      if (waEl && data.whatsapp) waEl.value = data.whatsapp;
+    }
+  } catch (e) {
+    console.warn("Could not load support settings:", e);
+  }
 }

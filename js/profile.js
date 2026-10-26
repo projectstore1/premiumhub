@@ -1,8 +1,8 @@
 // Premiumhub Customer Profile Controller
 import { auth, db } from "./firebase-config.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-import { doc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-import { showToast } from "./auth.js";
+import { onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+import { showToast, generateUniqueProfileUID } from "./auth.js";
 
 export function initProfilePage() {
   const container = document.getElementById("profile-content");
@@ -17,11 +17,29 @@ export function initProfilePage() {
     try {
       const userRef = doc(db, "users", user.uid);
       const snap = await getDoc(userRef);
-      const userData = snap.exists() ? snap.data() : {};
-      const profileUID = userData.profileUID || "Pending";
+      let userData = snap.exists() ? snap.data() : {};
+      
+      // Auto-create Numeric Profile UID if missing
+      let profileUID = userData.profileUID;
+      if (!profileUID) {
+        profileUID = await generateUniqueProfileUID();
+        try {
+          await setDoc(userRef, {
+            uid: user.uid,
+            profileUID: profileUID,
+            email: user.email || "",
+            displayName: user.displayName || "Customer",
+            role: userData.role || "customer",
+            createdAt: serverTimestamp()
+          }, { merge: true });
+        } catch (saveErr) {
+          console.warn("Could not auto-persist profile UID:", saveErr);
+        }
+      }
+
       const createdAt = userData.createdAt?.seconds 
         ? new Date(userData.createdAt.seconds * 1000).toLocaleDateString()
-        : "Recent";
+        : "Active Member";
 
       container.innerHTML = `
         <div class="card" style="max-width: 600px; margin: 0 auto;">
@@ -30,12 +48,12 @@ export function initProfilePage() {
               ${(user.displayName || user.email || 'U')[0].toUpperCase()}
             </div>
             <div>
-              <h2 style="font-size:1.35rem;font-weight:800;">${user.displayName || "Customer"}</h2>
-              <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
-                <span style="font-size:0.8rem;font-weight:700;background:var(--color-light-purple);color:var(--color-primary);padding:3px 10px;border-radius:9999px;">
+              <h2 style="font-size:1.35rem;font-weight:800;">${user.displayName || "Customer Profile"}</h2>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap;">
+                <span style="font-size:0.82rem;font-weight:800;background:var(--color-light-purple);color:var(--color-primary);padding:4px 12px;border-radius:9999px;border:1px solid #D2C8FF;">
                   Profile UID: #${profileUID}
                 </span>
-                <span style="font-size:0.8rem;color:var(--color-text-sub);">Member since: ${createdAt}</span>
+                <span style="font-size:0.8rem;color:var(--color-text-sub);">${createdAt}</span>
               </div>
             </div>
           </div>
@@ -52,17 +70,17 @@ export function initProfilePage() {
             </div>
 
             <div class="form-group">
-              <label class="form-label">WhatsApp Number (For Order Updates)</label>
+              <label class="form-label">WhatsApp Number (For Order Updates & Delivery)</label>
               <input type="tel" id="prof-whatsapp" class="form-input" placeholder="+234..." value="${userData.whatsapp || ''}">
             </div>
 
             <div class="form-group">
-              <label class="form-label">Unique Numeric Profile UID</label>
-              <input type="text" class="form-input" value="${profileUID}" disabled style="background:#F8F7FC;font-weight:700;color:var(--color-primary);letter-spacing:1px;cursor:not-allowed;">
-              <small style="color:var(--color-text-sub);font-size:0.8rem;">Used as your reference for direct bank & crypto order verification.</small>
+              <label class="form-label">Unique Numeric Profile UID (Reference)</label>
+              <input type="text" class="form-input" value="${profileUID}" disabled style="background:#F8F7FC;font-weight:800;color:var(--color-primary);letter-spacing:1px;cursor:not-allowed;">
+              <small style="color:var(--color-text-sub);font-size:0.8rem;">Your permanent automated verification reference for Crypto and Naira transfers.</small>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block" style="margin-top:12px;">
+            <button type="submit" id="save-prof-btn" class="btn btn-primary btn-block" style="margin-top:12px;">
               Save Profile Changes
             </button>
           </form>
@@ -74,21 +92,37 @@ export function initProfilePage() {
         </div>
       `;
 
-      // Profile edit submit
+      // Profile edit submit handler
       document.getElementById("profile-edit-form")?.addEventListener("submit", async (e) => {
         e.preventDefault();
+        const saveBtn = document.getElementById("save-prof-btn");
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving Changes...";
+
         const newName = document.getElementById("prof-name").value.trim();
         const newWhatsapp = document.getElementById("prof-whatsapp").value.trim();
 
         try {
-          await updateDoc(userRef, {
+          if (user.displayName !== newName) {
+            await updateProfile(user, { displayName: newName }).catch(() => {});
+          }
+
+          // Use setDoc with merge: true to avoid document not found or permission errors
+          await setDoc(userRef, {
             displayName: newName,
             whatsapp: newWhatsapp,
+            email: user.email || "",
+            profileUID: profileUID,
             updatedAt: serverTimestamp()
-          });
-          showToast("Profile updated successfully!", "success");
+          }, { merge: true });
+
+          showToast("Profile changes saved successfully!", "success");
         } catch (err) {
+          console.error("Save profile error:", err);
           showToast(err.message || "Failed to update profile", "error");
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save Profile Changes";
         }
       });
 
@@ -99,9 +133,10 @@ export function initProfilePage() {
           window.location.href = "./index.html";
         });
       });
+
     } catch (err) {
       console.error("Profile load error:", err);
-      container.innerHTML = `<div class="card"><p style="color:red;">Error loading profile. Please refresh.</p></div>`;
+      container.innerHTML = `<div class="card"><p style="color:red;">Error loading profile: ${err.message}. Please refresh.</p></div>`;
     }
   });
 }

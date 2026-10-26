@@ -22,7 +22,18 @@
       <p style="font-size: 0.85rem; color: #77718A; margin-top: 4px;">Premiumhub Management & Control Panel</p>
     </div>
 
+    <!-- Sign In / Register Admin Toggle -->
+    <div style="display:flex;background:#F3EEFF;padding:4px;border-radius:10px;margin-bottom:20px;">
+      <button type="button" id="tab-admin-login" style="flex:1;padding:8px;border:none;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;background:#6C3BFF;color:#FFF;">Sign In</button>
+      <button type="button" id="tab-admin-reg" style="flex:1;padding:8px;border:none;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;background:transparent;color:#4B22CC;">Register Admin</button>
+    </div>
+
     <form id="admin-login-form">
+      <div class="form-group" id="admin-name-group" style="display:none;">
+        <label class="form-label">Administrator Full Name</label>
+        <input type="text" id="admin-name" class="form-input" placeholder="MD ABDULLAH">
+      </div>
+
       <div class="form-group">
         <label class="form-label">Administrator Email</label>
         <input type="email" id="admin-email" class="form-input" placeholder="admin@premiumhub.com" required>
@@ -30,7 +41,7 @@
 
       <div class="form-group">
         <label class="form-label">Password</label>
-        <input type="password" id="admin-pass" class="form-input" placeholder="••••••••" required>
+        <input type="password" id="admin-pass" class="form-input" placeholder="••••••••" required minlength="6">
       </div>
 
       <button type="submit" id="admin-submit-btn" class="btn btn-primary btn-block" style="margin-top: 14px; background: linear-gradient(135deg, #4B22CC, #6C3BFF);">
@@ -39,20 +50,53 @@
     </form>
 
     <div style="margin-top: 24px; padding: 12px; background: #F8F7FC; border-radius: 10px; font-size: 0.8rem; color: #77718A; text-align: center; border: 1px solid #E8E5F2;">
-      🔐 <strong>Security Enforcement:</strong> Only authorized administrator credentials have access to order management, payment verification, and sensitive system settings.
+      🔐 <strong>Security Enforcement:</strong> Only authorized administrator credentials have access to order management, payment verification, and system settings.
     </div>
 
     <div style="text-align: center; margin-top: 16px;">
       <a href="../index.html" style="font-size: 0.85rem; color: #6C3BFF; font-weight: 600;">← Return to Premiumhub Store</a>
     </div>
+
   </div>
 
   <script type="module" src="../js/install.js"></script>
   <script type="module">
     import { auth } from "../js/firebase-config.js";
-    import { signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import {
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      updateProfile,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
     import { verifyAdminAuth } from "../js/admin.js";
     import { showToast } from "../js/auth.js";
+
+    let isRegisterMode = false;
+
+    const tabLogin = document.getElementById("tab-admin-login");
+    const tabReg = document.getElementById("tab-admin-reg");
+    const nameGroup = document.getElementById("admin-name-group");
+    const submitBtn = document.getElementById("admin-submit-btn");
+
+    tabLogin?.addEventListener("click", () => {
+      isRegisterMode = false;
+      tabLogin.style.background = "#6C3BFF";
+      tabLogin.style.color = "#FFF";
+      tabReg.style.background = "transparent";
+      tabReg.style.color = "#4B22CC";
+      nameGroup.style.display = "none";
+      submitBtn.textContent = "Enter PHAdmin Dashboard →";
+    });
+
+    tabReg?.addEventListener("click", () => {
+      isRegisterMode = true;
+      tabReg.style.background = "#6C3BFF";
+      tabReg.style.color = "#FFF";
+      tabLogin.style.background = "transparent";
+      tabLogin.style.color = "#4B22CC";
+      nameGroup.style.display = "block";
+      submitBtn.textContent = "Create Master Admin & Enter →";
+    });
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -67,25 +111,35 @@
       e.preventDefault();
       const email = document.getElementById("admin-email").value.trim();
       const pass = document.getElementById("admin-pass").value;
-      const btn = document.getElementById("admin-submit-btn");
+      const name = document.getElementById("admin-name")?.value.trim() || "Administrator";
 
-      btn.disabled = true;
-      btn.textContent = "Verifying Credentials...";
+      submitBtn.disabled = true;
+      submitBtn.textContent = isRegisterMode ? "Provisioning Admin..." : "Verifying Credentials...";
 
       try {
-        await signInWithEmailAndPassword(auth, email, pass);
+        if (isRegisterMode) {
+          const cred = await createUserWithEmailAndPassword(auth, email, pass);
+          await updateProfile(cred.user, { displayName: name }).catch(() => {});
+          showToast("Admin account registered successfully!", "success");
+        } else {
+          await signInWithEmailAndPassword(auth, email, pass);
+        }
+
         const adminResult = await verifyAdminAuth();
         if (adminResult && adminResult.isAdmin) {
-          window.location.href = "./dashboard.html";
+          showToast("Welcome to PHAdmin!", "success");
+          setTimeout(() => {
+            window.location.href = "./dashboard.html";
+          }, 300);
         } else {
           showToast("Account does not have admin permissions", "error");
-          btn.disabled = false;
-          btn.textContent = "Enter PHAdmin Dashboard →";
+          submitBtn.disabled = false;
+          submitBtn.textContent = isRegisterMode ? "Create Master Admin & Enter →" : "Enter PHAdmin Dashboard →";
         }
       } catch (err) {
-        showToast(err.message || "Invalid administrator credentials", "error");
-        btn.disabled = false;
-        btn.textContent = "Enter PHAdmin Dashboard →";
+        showToast(err.message || "Authentication error", "error");
+        submitBtn.disabled = false;
+        submitBtn.textContent = isRegisterMode ? "Create Master Admin & Enter →" : "Enter PHAdmin Dashboard →";
       }
     });
   </script>

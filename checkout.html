@@ -132,11 +132,12 @@
   </main>
 
   <script type="module" src="./js/install.js"></script>
+  <script type="module" src="./js/support-widget.js"></script>
   <script type="module">
     import { auth, db } from "./js/firebase-config.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-    import { getProductById, formatPrice } from "./js/products.js";
+    import { getProductById, formatPrice, calculateNairaPrice } from "./js/products.js";
     import { fetchPaymentMethods, createOrder } from "./js/checkout.js";
     import { showToast } from "./js/auth.js";
 
@@ -258,14 +259,16 @@
       const destLabel = document.getElementById("dest-label");
       const destValue = document.getElementById("dest-value");
 
+      const usdt = currentProduct ? (Number(currentProduct.price) || 0) : 0;
+      const naira = calculateNairaPrice(usdt);
       if (type === 'crypto') {
         destLabel.textContent = `Wallet Address (${method.network}):`;
         destValue.textContent = method.address;
-        instructionsEl.textContent = method.instructions || "Send exact amount to address below and enter tx hash.";
+        instructionsEl.innerHTML = `<div style="margin-bottom:6px;font-size:0.95rem;"><strong>Payable Amount:</strong> <span style="color:var(--color-primary);font-weight:800;">$${usdt.toFixed(2)} USDT</span> <span style="font-size:0.8rem;color:var(--color-text-sub);font-weight:600;">(≈ ₦${naira.toLocaleString()})</span></div>` + (method.instructions || "Send exact USDT amount to the address below and paste your transaction hash.");
       } else {
         destLabel.textContent = `${method.bankName} Account Number:`;
         destValue.textContent = `${method.accountNumber} (${method.accountHolder})`;
-        instructionsEl.textContent = method.instructions || "Transfer amount to the bank account and enter your transfer reference below.";
+        instructionsEl.innerHTML = `<div style="margin-bottom:6px;font-size:0.95rem;"><strong>Payable Amount:</strong> <span style="color:var(--color-primary);font-weight:800;">₦${naira.toLocaleString()}</span> <span style="font-size:0.8rem;color:var(--color-text-sub);font-weight:600;">($${usdt.toFixed(2)} USDT @ 1$=₦1,440)</span></div>` + (method.instructions || "Transfer exact Naira amount to the account below and enter your payment session reference.");
       }
     }
 

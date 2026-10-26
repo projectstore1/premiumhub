@@ -10,12 +10,13 @@ import {
   deleteDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-import { formatPrice } from "./products.js";
+import { formatPrice, formatUsdt, formatNaira, calculateNairaPrice, fetchExchangeRate, getExchangeRate } from "./products.js";
 import { showToast } from "./auth.js";
 
 let productsList = [];
 
 export async function initProductsPage() {
+  await fetchExchangeRate();
   const tableBody = document.getElementById("products-tbody");
   const addBtn = document.getElementById("open-add-product-modal");
   const modal = document.getElementById("product-modal");
@@ -23,6 +24,26 @@ export async function initProductsPage() {
   const productForm = document.getElementById("product-form");
   const searchInput = document.getElementById("product-search");
   const categoryFilter = document.getElementById("product-category-filter");
+  const priceInput = document.getElementById("prod-price");
+
+  // Live Naira conversion indicator inside modal
+  const updateNairaPreview = () => {
+    let previewEl = document.getElementById("prod-naira-hint");
+    if (!previewEl && priceInput) {
+      previewEl = document.createElement("div");
+      previewEl.id = "prod-naira-hint";
+      previewEl.style.cssText = "font-size:0.8rem;color:var(--admin-primary);font-weight:700;margin-top:4px;";
+      priceInput.parentNode.appendChild(previewEl);
+    }
+    if (previewEl && priceInput) {
+      const val = parseFloat(priceInput.value) || 0;
+      const rate = getExchangeRate();
+      const naira = calculateNairaPrice(val, rate);
+      previewEl.textContent = `≈ ₦${naira.toLocaleString()} NGN (at 1$ = ₦${rate.toLocaleString()})`;
+    }
+  };
+
+  priceInput?.addEventListener("input", updateNairaPreview);
 
   await loadProducts();
 
@@ -33,42 +54,47 @@ export async function initProductsPage() {
       return;
     }
 
-    tableBody.innerHTML = items.map(p => `
-      <tr>
-        <td>
-          <img src="${p.image || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=100&q=80'}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;" alt="${p.name}">
-        </td>
-        <td style="font-weight:700;color:var(--admin-text-main);">${p.name}</td>
-        <td><span style="background:var(--admin-light-purple);color:var(--admin-primary);padding:3px 8px;border-radius:6px;font-size:0.8rem;font-weight:600;">${p.category || 'General'}</span></td>
-        <td style="font-weight:700;color:var(--admin-primary);">${formatPrice(p.price)}</td>
-        <td>
-          <span class="badge ${p.available ? 'badge-confirmed' : 'badge-rejected'}">
-            ${p.available ? 'In Stock' : 'Out of Stock'}
-          </span>
-        </td>
-        <td>
-          <button class="toggle-active-btn" data-id="${p.id}" data-active="${p.active !== false}" style="font-size:0.8rem;padding:4px 8px;border-radius:6px;background:${p.active !== false ? '#E0F2FE' : '#F3F4F6'};color:${p.active !== false ? '#0369A1' : '#6B7280'};font-weight:600;">
-            ${p.active !== false ? 'Active' : 'Disabled'}
-          </button>
-        </td>
-        <td>
-          <div style="display:flex;gap:6px;">
-            <button class="edit-prod-btn btn-sm" data-id="${p.id}" style="background:#F3EEFF;color:var(--admin-primary);border-radius:6px;font-weight:600;padding:4px 10px;">Edit</button>
-            <button class="del-prod-btn btn-sm" data-id="${p.id}" style="background:#FEE2E2;color:#DC2626;border-radius:6px;font-weight:600;padding:4px 10px;">Delete</button>
-          </div>
-        </td>
-      </tr>
-    `).join("");
+    tableBody.innerHTML = items.map(p => {
+      const usdt = typeof p.priceUsdt === 'number' ? p.priceUsdt : (Number(p.price) || 0);
+      const naira = p.priceNaira || calculateNairaPrice(usdt);
+      return `
+        <tr>
+          <td>
+            <img src="${p.image || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=100&q=80'}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;" alt="${p.name}">
+          </td>
+          <td style="font-weight:700;color:var(--admin-text-main);">${p.name}</td>
+          <td><span style="background:var(--admin-light-purple);color:var(--admin-primary);padding:3px 8px;border-radius:6px;font-size:0.8rem;font-weight:600;">${p.category || 'General'}</span></td>
+          <td style="font-weight:700;color:var(--admin-primary);">
+            $${usdt.toFixed(2)} USDT
+            <div style="font-size:0.75rem;color:var(--admin-text-sub);font-weight:500;">≈ ₦${naira.toLocaleString()}</div>
+          </td>
+          <td>
+            <span class="badge ${p.available ? 'badge-confirmed' : 'badge-rejected'}">
+              ${p.available ? 'In Stock' : 'Out of Stock'}
+            </span>
+          </td>
+          <td>
+            <button class="toggle-active-btn" data-id="${p.id}" data-active="${p.active !== false}" style="font-size:0.8rem;padding:4px 8px;border-radius:6px;background:${p.active !== false ? '#E0F2FE' : '#F3F4F6'};color:${p.active !== false ? '#0369A1' : '#6B7280'};font-weight:600;">
+              ${p.active !== false ? 'Active' : 'Disabled'}
+            </button>
+          </td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <button class="edit-prod-btn btn-sm" data-id="${p.id}" style="background:#F3EEFF;color:var(--admin-primary);border-radius:6px;font-weight:600;padding:4px 10px;">Edit</button>
+              <button class="del-prod-btn btn-sm" data-id="${p.id}" style="background:#FEE2E2;color:#DC2626;border-radius:6px;font-weight:600;padding:4px 10px;">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
 
     // Attach listeners
     document.querySelectorAll(".edit-prod-btn").forEach(btn => {
       btn.addEventListener("click", () => openEditModal(btn.dataset.id));
     });
-
     document.querySelectorAll(".del-prod-btn").forEach(btn => {
       btn.addEventListener("click", () => handleDeleteProduct(btn.dataset.id));
     });
-
     document.querySelectorAll(".toggle-active-btn").forEach(btn => {
       btn.addEventListener("click", () => handleToggleActive(btn.dataset.id, btn.dataset.active === "true"));
     });
@@ -78,7 +104,21 @@ export async function initProductsPage() {
     try {
       const snap = await getDocs(collection(db, "products"));
       productsList = [];
-      snap.forEach(d => productsList.push({ id: d.id, ...d.data() }));
+      const rate = getExchangeRate();
+      snap.forEach(d => {
+        const data = d.data();
+        let usdtPrice = data.price;
+        if (typeof usdtPrice === 'number' && usdtPrice > 500) {
+          usdtPrice = +(usdtPrice / rate).toFixed(2);
+        }
+        productsList.push({
+          id: d.id,
+          ...data,
+          price: usdtPrice,
+          priceUsdt: usdtPrice,
+          priceNaira: calculateNairaPrice(usdtPrice, rate)
+        });
+      });
       renderTable(productsList);
     } catch (e) {
       console.error(e);
@@ -105,6 +145,7 @@ export async function initProductsPage() {
     productForm.reset();
     document.getElementById("prod-edit-id").value = "";
     document.getElementById("modal-prod-title").textContent = "Add New Product";
+    updateNairaPreview();
     modal.classList.add("open");
   });
 
@@ -113,6 +154,7 @@ export async function initProductsPage() {
   function openEditModal(id) {
     const prod = productsList.find(p => p.id === id);
     if (!prod) return;
+
     document.getElementById("prod-edit-id").value = prod.id;
     document.getElementById("prod-name").value = prod.name || "";
     document.getElementById("prod-category").value = prod.category || "";
@@ -123,17 +165,26 @@ export async function initProductsPage() {
     document.getElementById("prod-available").checked = prod.available !== false;
     document.getElementById("prod-active").checked = prod.active !== false;
     document.getElementById("modal-prod-title").textContent = "Edit Product";
+    updateNairaPreview();
     modal.classList.add("open");
   }
 
   productForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const editId = document.getElementById("prod-edit-id").value;
+    const usdtPrice = parseFloat(document.getElementById("prod-price").value) || 0;
+    const oldPrice = parseFloat(document.getElementById("prod-old-price").value) || null;
+    const rate = getExchangeRate();
+    const nairaPrice = calculateNairaPrice(usdtPrice, rate);
+
     const prodData = {
       name: document.getElementById("prod-name").value.trim(),
       category: document.getElementById("prod-category").value.trim(),
-      price: parseFloat(document.getElementById("prod-price").value) || 0,
-      oldPrice: parseFloat(document.getElementById("prod-old-price").value) || null,
+      price: usdtPrice, // Base USDT
+      priceUsdt: usdtPrice,
+      priceNaira: nairaPrice,
+      currency: "USDT",
+      oldPrice: oldPrice,
       image: document.getElementById("prod-image").value.trim(),
       description: document.getElementById("prod-desc").value.trim(),
       available: document.getElementById("prod-available").checked,

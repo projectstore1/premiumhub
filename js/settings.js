@@ -1,7 +1,8 @@
-// Premiumhub Customer Settings Module
+// Premiumhub Customer Settings & Support Module
 import { showToast } from "./auth.js";
+import { fetchSupportSettings } from "./products.js";
 
-export function initSettingsPage() {
+export async function initSettingsPage() {
   const installBtn = document.getElementById("manual-install-btn");
   if (installBtn) {
     installBtn.addEventListener("click", () => {
@@ -27,5 +28,30 @@ export function initSettingsPage() {
         setTimeout(() => window.location.reload(), 1000);
       }
     });
+  }
+
+  // Dynamically load Admin-Configured Telegram & WhatsApp links
+  try {
+    const support = await fetchSupportSettings();
+    const tgBtn = document.getElementById("support-telegram-btn");
+    const waBtn = document.getElementById("support-whatsapp-btn");
+    const tgLabel = document.getElementById("support-telegram-label");
+    const waLabel = document.getElementById("support-whatsapp-label");
+
+    if (tgBtn && support.telegramUrl) {
+      tgBtn.href = support.telegramUrl;
+      if (tgLabel && support.telegram) {
+        tgLabel.textContent = `${support.telegram} • Instant Replies`;
+      }
+    }
+
+    if (waBtn && support.whatsappUrl) {
+      waBtn.href = support.whatsappUrl;
+      if (waLabel && support.whatsapp) {
+        waLabel.textContent = `${support.whatsapp} • Direct Chat`;
+      }
+    }
+  } catch (e) {
+    console.warn("Could not populate support links:", e);
   }
 }

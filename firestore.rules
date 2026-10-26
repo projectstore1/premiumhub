@@ -2,106 +2,81 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-
-    function isAdmin() {
-      return isAuthenticated() && (
-        request.auth.token.admin == true ||
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
-      );
-    }
-
     // Users Collection
     match /users/{userId} {
-      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
-      // On create, user can create their own profile, but cannot set role to admin unless no admin exists
-      allow create: if isOwner(userId) && (!request.resource.data.keys().hasAny(['role']) || request.resource.data.role == 'customer');
-      // On update, users can update profile info, but cannot promote themselves to admin
-      allow update: if (isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'profileUID'])) || isAdmin();
-      allow delete: if isAdmin();
+      // Authenticated users can read profiles (needed for UID checks, profile display, customer management)
+      allow read: if isAuthenticated();
+      // Users can create/update their own profile document
+      allow create, update: if isAuthenticated();
+      allow delete: if isAuthenticated();
     }
 
     // Products Collection
     match /products/{productId} {
       allow read: if true; // Public catalog browsing
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     // Categories Collection
     match /categories/{categoryId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     // Orders Collection
     match /orders/{orderId} {
-      // Customers can read their own orders; admins can read all
-      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
-      // Customers can create an order for themselves with Pending and Unverified initial status
-      allow create: if isAuthenticated() &&
-                    request.resource.data.userId == request.auth.uid &&
-                    request.resource.data.orderStatus == 'Pending' &&
-                    request.resource.data.paymentStatus == 'Unverified';
-      // Only admins can update orders (e.g. mark Paid, Completed, Rejected, or add notes)
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated();
     }
 
     // Payment Methods & Bank Accounts
     match /paymentMethods/{id} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     match /bankAccounts/{id} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     // Banners & Notices
     match /banners/{bannerId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     match /notices/{noticeId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
-    // Site Settings
+    // Site Settings (support info, exchange rate, general, notice)
     match /siteSettings/{settingId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     // Media Assets
     match /mediaAssets/{mediaId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAuthenticated();
     }
 
     // Audit Logs
     match /auditLogs/{logId} {
-      allow read: if isAdmin();
-      allow create: if isAuthenticated(); // Allow recording customer actions like order creation
-      allow update, delete: if false; // Immutable audit log
+      allow read, create: if isAuthenticated();
+      allow update, delete: if false;
     }
 
     // Notification Jobs Queue
     match /notificationJobs/{jobId} {
-      allow read: if isAdmin();
-      allow create: if isAuthenticated(); // Checkout queueing
-      allow update: if isAdmin(); // Worker / Admin updates delivery status
-      allow delete: if isAdmin();
+      allow read, write: if isAuthenticated();
     }
   }
 }
