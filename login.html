@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Sign In — Premiumhub</title>
+  <meta name="theme-color" content="#6C3BFF">
+  <link rel="manifest" href="/pwa/main.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/icons/premiumhub-192.png">
+  <link rel="icon" type="image/png" href="/assets/icons/premiumhub-192.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/install.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="brand">
+        <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
+        <span class="brand-text">Premiumhub</span>
+      </a>
+      <a href="/register.html" class="header-btn header-btn-ghost">Create Account</a>
+    </div>
+  </header>
+
+  <main class="container" style="padding: 40px 16px 80px;">
+    <div class="card" style="max-width: 440px; margin: 0 auto;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--color-text-main);">Welcome Back</h1>
+        <p style="font-size: 0.9rem; color: var(--color-text-sub); margin-top: 4px;">Sign in to your Premiumhub customer account</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="youremail@gmail.com" required>
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label class="form-label">Password</label>
+            <a href="#" id="forgot-password-link" style="font-size: 0.8rem; color: var(--color-primary); font-weight: 600;">Forgot Password?</a>
+          </div>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" id="login-submit-btn" class="btn btn-primary btn-block" style="margin-top: 14px;">
+          Sign In →
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 20px; font-size: 0.88rem; color: var(--color-text-sub);">
+        Don't have an account yet? <a href="/register.html" style="color: var(--color-primary); font-weight: 700;">Register here</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/install.js" defer></script>
+  <script type="module">
+    import { loginUser, resetPassword, showToast } from "/js/auth.js";
+    import { auth } from "/js/firebase-config.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectTarget = urlParams.get("redirect") || "/";
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = redirectTarget;
+      }
+    });
+
+    document.getElementById("login-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const pass = document.getElementById("login-password").value;
+      const btn = document.getElementById("login-submit-btn");
+
+      btn.disabled = true;
+      btn.textContent = "Authenticating...";
+
+      try {
+        await loginUser(email, pass);
+        window.location.href = redirectTarget;
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "Sign In →";
+      }
+    });
+
+    document.getElementById("forgot-password-link")?.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = prompt("Enter your registered email address for password reset instructions:");
+      if (email && email.trim()) {
+        try {
+          await resetPassword(email.trim());
+        } catch (err) {}
+      }
+    });
+  </script>
+</body>
+</html>

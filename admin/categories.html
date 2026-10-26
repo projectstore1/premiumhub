@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categories — PHAdmin Portal</title>
+  <meta name="theme-color" content="#4B22CC">
+  <link rel="manifest" href="/pwa/admin.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/icons/phadmin-192.png">
+  <link rel="icon" type="image/png" href="/assets/icons/phadmin-192.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/install.css">
+</head>
+<body>
+
+  <div class="admin-sidebar-overlay" id="admin-sidebar-overlay"></div>
+
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="sidebar-header">
+      <a href="/admin/dashboard.html" class="sidebar-brand">
+        <img src="/assets/icons/phadmin-192.png" alt="PHAdmin Logo" class="sidebar-brand-img">
+        <div class="sidebar-brand-title">
+          <span>PHAdmin</span>
+          <span class="sidebar-brand-subtitle">Admin Panel</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Store Management</div>
+      <a href="/admin/dashboard.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/admin/products.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        <span>Products</span>
+      </a>
+      <a href="/admin/categories.html" class="sidebar-nav-item active">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+        <span>Categories</span>
+      </a>
+      <a href="/admin/orders.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        <span>Orders & Verification</span>
+      </a>
+      <a href="/admin/invoices.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <span>Invoices</span>
+      </a>
+      <a href="/admin/customers.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <span>Customers & UIDs</span>
+      </a>
+
+      <div class="nav-section-title">Configuration</div>
+      <a href="/admin/payments.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        <span>Payment Methods</span>
+      </a>
+      <a href="/admin/settings.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <span>Website & Telegram</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <div class="admin-header-left">
+        <button id="admin-menu-toggle" class="menu-toggle-btn" aria-label="Toggle Sidebar">
+          <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <span style="font-weight:700;color:var(--admin-text-main);">Product Categories</span>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div style="display:grid;grid-template-columns:1fr;gap:24px;">
+        <!-- Add Category Form -->
+        <div class="card" style="max-width:540px;">
+          <h3 style="font-size:1.15rem;font-weight:800;margin-bottom:14px;">Add New Category</h3>
+          <form id="add-category-form">
+            <div class="form-group">
+              <label class="form-label">Category Name</label>
+              <input type="text" id="cat-name-input" class="form-input" placeholder="e.g. Cloud & Hosting" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">+ Create Category</button>
+          </form>
+        </div>
+
+        <!-- Categories Table -->
+        <div class="table-card">
+          <div class="table-header">
+            <h3 style="font-size:1.15rem;font-weight:800;">Existing Store Categories</h3>
+          </div>
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Category Name</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="categories-tbody">
+                <tr><td colspan="3" style="text-align:center;padding:20px;">Loading categories...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/install.js" defer></script>
+  <script type="module">
+    import { verifyAdminAuth, initAdminSidebar } from "/js/admin.js";
+    import { db } from "/js/firebase-config.js";
+    import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+    import { showToast } from "/js/auth.js";
+
+    async function init() {
+      const authResult = await verifyAdminAuth();
+      if (!authResult) return;
+      initAdminSidebar();
+      loadCategories();
+
+      document.getElementById("add-category-form")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = document.getElementById("cat-name-input").value.trim();
+        try {
+          await addDoc(collection(db, "categories"), {
+            name,
+            active: true,
+            createdAt: serverTimestamp()
+          });
+          showToast("Category created!", "success");
+          document.getElementById("add-category-form").reset();
+          loadCategories();
+        } catch (err) {
+          showToast(err.message || "Failed", "error");
+        }
+      });
+    }
+
+    async function loadCategories() {
+      const tbody = document.getElementById("categories-tbody");
+      if (!tbody) return;
+
+      try {
+        const snap = await getDocs(collection(db, "categories"));
+        const defaultCats = ["Entertainment", "AI & Tools", "Design", "Finance", "Education"];
+        let list = [];
+
+        snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+
+        if (list.length === 0) {
+          tbody.innerHTML = defaultCats.map(c => `
+            <tr>
+              <td style="font-weight:700;">${c}</td>
+              <td><span class="badge badge-confirmed">Active</span></td>
+              <td><span style="font-size:0.8rem;color:var(--admin-text-sub);">Default system category</span></td>
+            </tr>
+          `).join("");
+          return;
+        }
+
+        tbody.innerHTML = list.map(c => `
+          <tr>
+            <td style="font-weight:700;">${c.name}</td>
+            <td><span class="badge badge-confirmed">Active</span></td>
+            <td>
+              <button class="del-cat-btn btn-sm" data-id="${c.id}" style="background:#FEE2E2;color:#DC2626;border-radius:6px;font-weight:600;padding:4px 10px;">Delete</button>
+            </td>
+          </tr>
+        `).join("");
+
+        document.querySelectorAll(".del-cat-btn").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            if (confirm("Delete category?")) {
+              await deleteDoc(doc(db, "categories", btn.dataset.id));
+              showToast("Category removed", "info");
+              loadCategories();
+            }
+          });
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

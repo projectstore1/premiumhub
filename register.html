@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Customer Account — Premiumhub</title>
+  <meta name="theme-color" content="#6C3BFF">
+  <link rel="manifest" href="/pwa/main.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/icons/premiumhub-192.png">
+  <link rel="icon" type="image/png" href="/assets/icons/premiumhub-192.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/install.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="brand">
+        <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
+        <span class="brand-text">Premiumhub</span>
+      </a>
+      <a href="/login.html" class="header-btn header-btn-ghost">Sign In</a>
+    </div>
+  </header>
+
+  <main class="container" style="padding: 40px 16px 80px;">
+    <div class="card" style="max-width: 460px; margin: 0 auto;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--color-text-main);">Create Your Account</h1>
+        <p style="font-size: 0.9rem; color: var(--color-text-sub); margin-top: 4px;">Get your unique numeric Profile UID and instant order tracking</p>
+      </div>
+
+      <form id="register-form">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="e.g. Alex Johnson" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="youremail@gmail.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Choose Password</label>
+          <input type="password" id="reg-password" class="form-input" placeholder="At least 6 characters" minlength="6" required>
+        </div>
+
+        <div style="background:#F3EEFF;border:1px solid #E2D7FF;border-radius:10px;padding:12px;margin:16px 0;font-size:0.82rem;color:var(--color-dark-purple);">
+          🛡️ <strong>Secure Profile UID:</strong> A unique numeric profile identification code (e.g. #2583) will be automatically generated and bound to your account for verified transaction tracking.
+        </div>
+
+        <button type="submit" id="reg-submit-btn" class="btn btn-primary btn-block">
+          Create Account & Generate UID →
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 20px; font-size: 0.88rem; color: var(--color-text-sub);">
+        Already have an account? <a href="/login.html" style="color: var(--color-primary); font-weight: 700;">Sign in here</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/install.js" defer></script>
+  <script type="module">
+    import { registerCustomer, showToast } from "/js/auth.js";
+    import { auth } from "/js/firebase-config.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectTarget = urlParams.get("redirect") || "/profile.html";
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = redirectTarget;
+      }
+    });
+
+    document.getElementById("register-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("reg-name").value.trim();
+      const email = document.getElementById("reg-email").value.trim();
+      const pass = document.getElementById("reg-password").value;
+      const btn = document.getElementById("reg-submit-btn");
+
+      btn.disabled = true;
+      btn.textContent = "Creating Account & Generating UID...";
+
+      try {
+        await registerCustomer(name, email, pass);
+        window.location.href = redirectTarget;
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "Create Account & Generate UID →";
+      }
+    });
+  </script>
+</body>
+</html>

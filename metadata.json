@@ -1,0 +1,6 @@
+{
+  "name": "Premiumhub & PHAdmin",
+  "description": "Complete eCommerce platform and PHAdmin management panel with Firebase, multi-payment checkout, orders, invoices, Telegram notifications, and dual PWAs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Library — PHAdmin Portal</title>
+  <meta name="theme-color" content="#4B22CC">
+  <link rel="manifest" href="/pwa/admin.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/icons/phadmin-192.png">
+  <link rel="icon" type="image/png" href="/assets/icons/phadmin-192.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/install.css">
+</head>
+<body>
+
+  <div class="admin-sidebar-overlay" id="admin-sidebar-overlay"></div>
+
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="sidebar-header">
+      <a href="/admin/dashboard.html" class="sidebar-brand">
+        <img src="/assets/icons/phadmin-192.png" alt="PHAdmin Logo" class="sidebar-brand-img">
+        <div class="sidebar-brand-title">
+          <span>PHAdmin</span>
+          <span class="sidebar-brand-subtitle">Admin Panel</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Store Management</div>
+      <a href="/admin/dashboard.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/admin/products.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        <span>Products</span>
+      </a>
+      <a href="/admin/orders.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        <span>Orders & Verification</span>
+      </a>
+
+      <div class="nav-section-title">Marketing & Content</div>
+      <a href="/admin/banners.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span>Banners & Carousel</span>
+      </a>
+      <a href="/admin/media.html" class="sidebar-nav-item active">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        <span>Media Library</span>
+      </a>
+
+      <div class="nav-section-title">Configuration</div>
+      <a href="/admin/payments.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        <span>Payment Methods</span>
+      </a>
+      <a href="/admin/settings.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <span>Website & Telegram</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <div class="admin-header-left">
+        <button id="admin-menu-toggle" class="menu-toggle-btn" aria-label="Toggle Sidebar">
+          <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <span style="font-weight:700;color:var(--admin-text-main);">Store Media & Assets Library</span>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="card" style="margin-bottom:24px;">
+        <h3 style="font-size:1.15rem;font-weight:800;margin-bottom:8px;">Add Image Asset by URL</h3>
+        <p style="font-size:0.85rem;color:var(--admin-text-sub);margin-bottom:14px;">Store validated image links for products, banners, and payment QR codes.</p>
+        <form id="add-media-form" style="display:flex;gap:10px;flex-wrap:wrap;">
+          <input type="text" id="media-title" class="form-input" placeholder="Label / Title" style="flex:1;min-width:180px;" required>
+          <input type="url" id="media-url" class="form-input" placeholder="Image URL (https://...)" style="flex:2;min-width:240px;" required>
+          <button type="submit" class="btn btn-primary btn-sm">+ Add to Media</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:1.15rem;font-weight:800;margin-bottom:16px;">Registered Media Assets</h3>
+        <div id="media-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:16px;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/install.js" defer></script>
+  <script type="module">
+    import { verifyAdminAuth, initAdminSidebar } from "/js/admin.js";
+    import { db } from "/js/firebase-config.js";
+    import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+    import { showToast } from "/js/auth.js";
+
+    async function init() {
+      const authResult = await verifyAdminAuth();
+      if (!authResult) return;
+      initAdminSidebar();
+      await loadMedia();
+
+      document.getElementById("add-media-form")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const title = document.getElementById("media-title").value.trim();
+        const url = document.getElementById("media-url").value.trim();
+
+        try {
+          await addDoc(collection(db, "mediaAssets"), {
+            title,
+            url,
+            createdAt: serverTimestamp()
+          });
+          showToast("Media asset added!", "success");
+          document.getElementById("add-media-form").reset();
+          await loadMedia();
+        } catch (err) {
+          showToast(err.message || "Failed to add", "error");
+        }
+      });
+    }
+
+    async function loadMedia() {
+      const grid = document.getElementById("media-grid");
+      if (!grid) return;
+
+      try {
+        const snap = await getDocs(collection(db, "mediaAssets"));
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+
+        // Default app assets
+        const defaultAssets = [
+          { id: "app-logo", title: "Premiumhub Logo", url: "/assets/icons/premiumhub-512.png" },
+          { id: "admin-logo", title: "PHAdmin Logo", url: "/assets/icons/phadmin-512.png" }
+        ];
+
+        const all = [...defaultAssets, ...items];
+
+        grid.innerHTML = all.map(m => `
+          <div style="border:1px solid var(--admin-border);border-radius:12px;overflow:hidden;background:#FFF;box-shadow:var(--shadow-card);">
+            <div style="aspect-ratio:4/3;background:#FAF8FE;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+              <img src="${m.url}" alt="${m.title}" style="width:100%;height:100%;object-fit:cover;">
+            </div>
+            <div style="padding:10px 12px;">
+              <div style="font-weight:700;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${m.title}</div>
+              <div style="display:flex;gap:6px;margin-top:8px;">
+                <button class="copy-url-btn btn btn-outline btn-sm" data-url="${m.url}" style="flex:1;font-size:0.75rem;padding:4px 6px;">Copy URL</button>
+                ${m.id.startsWith("app-") ? '' : `<button class="del-media-btn btn btn-sm" data-id="${m.id}" style="background:#FEE2E2;color:#DC2626;padding:4px 6px;">✕</button>`}
+              </div>
+            </div>
+          </div>
+        `).join("");
+
+        document.querySelectorAll(".copy-url-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const url = btn.dataset.url.startsWith("/") ? window.location.origin + btn.dataset.url : btn.dataset.url;
+            navigator.clipboard.writeText(url).then(() => showToast("URL copied to clipboard!", "success"));
+          });
+        });
+
+        document.querySelectorAll(".del-media-btn").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            if (confirm("Delete media asset?")) {
+              await deleteDoc(doc(db, "mediaAssets", btn.dataset.id));
+              showToast("Asset deleted", "info");
+              loadMedia();
+            }
+          });
+        });
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

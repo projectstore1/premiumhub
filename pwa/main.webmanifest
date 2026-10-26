@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "Premiumhub",
+  "short_name": "Premiumhub",
+  "description": "Premium shopping made smarter. Digital & physical products with instant checkout.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F8F7FC",
+  "theme_color": "#6C3BFF",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/icons/premiumhub-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/premiumhub-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

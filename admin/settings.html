@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website & Telegram Settings — PHAdmin Portal</title>
+  <meta name="theme-color" content="#4B22CC">
+  <link rel="manifest" href="/pwa/admin.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/icons/phadmin-192.png">
+  <link rel="icon" type="image/png" href="/assets/icons/phadmin-192.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/install.css">
+</head>
+<body>
+
+  <div class="admin-sidebar-overlay" id="admin-sidebar-overlay"></div>
+
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="sidebar-header">
+      <a href="/admin/dashboard.html" class="sidebar-brand">
+        <img src="/assets/icons/phadmin-192.png" alt="PHAdmin Logo" class="sidebar-brand-img">
+        <div class="sidebar-brand-title">
+          <span>PHAdmin</span>
+          <span class="sidebar-brand-subtitle">Admin Panel</span>
+        </div>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Store Management</div>
+      <a href="/admin/dashboard.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="/admin/products.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        <span>Products</span>
+      </a>
+      <a href="/admin/orders.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        <span>Orders & Verification</span>
+      </a>
+
+      <div class="nav-section-title">Configuration</div>
+      <a href="/admin/payments.html" class="sidebar-nav-item">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        <span>Payment Methods</span>
+      </a>
+      <a href="/admin/settings.html" class="sidebar-nav-item active">
+        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <span>Website & Telegram</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <div class="admin-header-left">
+        <button id="admin-menu-toggle" class="menu-toggle-btn" aria-label="Toggle Sidebar">
+          <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <span style="font-weight:700;color:var(--admin-text-main);">Store & System Settings</span>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div style="display:grid;grid-template-columns:1fr;gap:24px;">
+
+        <!-- Announcement Notice Box Settings -->
+        <div class="card">
+          <h3 style="font-size:1.15rem;font-weight:800;color:var(--admin-text-main);margin-bottom:6px;">Store Announcement Notice Bar</h3>
+          <p style="font-size:0.85rem;color:var(--admin-text-sub);margin-bottom:16px;">Configure the announcement banner displayed at the top of the homepage.</p>
+
+          <form id="notice-settings-form">
+            <div style="margin-bottom:12px;">
+              <label style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.9rem;cursor:pointer;">
+                <input type="checkbox" id="notice-active" style="width:18px;height:18px;accent-color:var(--admin-primary);">
+                <span>Display Notice Banner on Storefront</span>
+              </label>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Notice Message Text</label>
+              <textarea id="notice-text" class="form-textarea" rows="2" placeholder="🔥 Welcome to Premiumhub! Enjoy automated instant checkout."></textarea>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Action Link Text (Optional)</label>
+                <input type="text" id="notice-link-text" class="form-input" placeholder="e.g. Shop Now">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Action Link URL</label>
+                <input type="text" id="notice-link-url" class="form-input" placeholder="#products">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm">Update Announcement Notice</button>
+          </form>
+        </div>
+
+        <!-- Telegram Bot Settings (Rule 12) -->
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#0088cc;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;">✈</div>
+            <div>
+              <h3 style="font-size:1.15rem;font-weight:800;color:var(--admin-text-main);">Telegram Bot Instant Order Notifications</h3>
+              <div style="font-size:0.8rem;color:var(--admin-text-sub);">Server-side Cloud Function notification dispatcher</div>
+            </div>
+          </div>
+
+          <div style="background:#FAF8FE;border:1px solid var(--admin-border);padding:14px;border-radius:12px;margin-bottom:16px;font-size:0.85rem;line-height:1.5;">
+            <strong>🔒 Server-Side Security Rule:</strong><br>
+            Per security requirements, the Telegram Bot Token is stored privately inside Firebase Cloud Functions Secret Manager (<code style="background:#EAE5F7;padding:2px 6px;border-radius:4px;">TELEGRAM_BOT_TOKEN</code>) and is NEVER exposed to client browsers or public repos.<br>
+            Set secret privately in terminal:
+            <pre style="background:#1F1A3A;color:#00D2FF;padding:10px;border-radius:8px;margin-top:8px;overflow-x:auto;">firebase functions:secrets:set TELEGRAM_BOT_TOKEN</pre>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Administrator Telegram Chat ID (<code style="color:var(--admin-primary);">TELEGRAM_ADMIN_CHAT_ID</code>)</label>
+            <input type="text" id="telegram-chat-id" class="form-input" placeholder="e.g. 123456789">
+            <small style="color:var(--admin-text-sub);font-size:0.8rem;">Your personal or channel Chat ID obtained from @userinfobot or @getidsbot.</small>
+          </div>
+
+          <button type="button" id="test-telegram-btn" class="btn btn-secondary btn-sm">
+            🔔 Send Test Notification Job to Queue
+          </button>
+        </div>
+
+        <!-- System & Developer Information -->
+        <div class="card">
+          <h3 style="font-size:1.15rem;font-weight:800;color:var(--admin-text-main);margin-bottom:12px;">Store Branding & Credits</h3>
+          <div style="font-size:0.9rem;color:var(--admin-text-sub);line-height:1.6;">
+            <div><strong>Store Name:</strong> Premiumhub</div>
+            <div><strong>Admin Panel:</strong> PHAdmin</div>
+            <div><strong>Backend:</strong> Firebase 11.10.0 (Cloud Firestore, Authentication, Functions, Storage)</div>
+            <div><strong>Frontend Engine:</strong> HTML5, CSS3, Vanilla JavaScript ES Modules</div>
+            <div><strong>Primary Developer Credit:</strong> <span style="font-weight:800;color:var(--admin-primary);">MD ABDULLAH</span></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/install.js" defer></script>
+  <script type="module">
+    import { verifyAdminAuth, initAdminSidebar } from "/js/admin.js";
+    import { initAdminSettingsPage } from "/js/admin-settings.js";
+
+    async function init() {
+      const authResult = await verifyAdminAuth();
+      if (!authResult) return;
+      initAdminSidebar();
+      initAdminSettingsPage();
+    }
+
+    init();
+  </script>
+</body>
+</html>

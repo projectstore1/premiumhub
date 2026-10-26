@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Official Invoice — Premiumhub</title>
+  <meta name="theme-color" content="#6C3BFF">
+  <link rel="manifest" href="/pwa/main.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/icons/premiumhub-192.png">
+  <link rel="icon" type="image/png" href="/assets/icons/premiumhub-192.png">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Export libraries for genuine PDF & PNG generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    @media print {
+      body { background: #fff !important; padding: 0 !important; }
+      .header, .no-print, .mobile-nav { display: none !important; }
+      .invoice-sheet { box-shadow: none !important; border: none !important; margin: 0 !important; width: 100% !important; }
+    }
+  </style>
+</head>
+<body style="background:#F2EFF8;">
+
+  <header class="header no-print">
+    <div class="container header-inner">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button onclick="window.history.back()" class="icon-btn" aria-label="Go Back">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </button>
+        <a href="/" class="brand">
+          <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
+          <span class="brand-text">Premiumhub</span>
+        </a>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <a href="/my-orders.html" class="header-btn header-btn-ghost">My Orders</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding: 24px 16px 60px;">
+
+    <!-- Action Toolbar (No-Print) -->
+    <div class="no-print" style="max-width:760px;margin:0 auto 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
+      <div style="font-weight:700;color:var(--color-text-main);font-size:1.1rem;">Official Customer Invoice</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button id="btn-copy-link" class="btn btn-outline btn-sm">
+          📋 Copy Link
+        </button>
+        <button id="btn-download-png" class="btn btn-secondary btn-sm">
+          🖼️ Download PNG
+        </button>
+        <button id="btn-download-pdf" class="btn btn-primary btn-sm">
+          📄 Download PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Printable & Exportable Invoice Paper -->
+    <div id="invoice-paper" class="invoice-sheet" style="max-width: 760px; margin: 0 auto; background: #FFFFFF; border-radius: 16px; border: 1px solid #E2DDF2; box-shadow: 0 10px 30px rgba(108, 59, 255, 0.08); padding: 36px 32px;">
+      
+      <!-- Invoice Header -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #F1EEFA;padding-bottom:24px;margin-bottom:24px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+            <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub" style="width:48px;height:48px;border-radius:10px;object-fit:cover;">
+            <div>
+              <h2 style="font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,#6C3BFF,#4B22CC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Premiumhub</h2>
+              <div style="font-size:0.75rem;color:#77718A;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Verified Store Receipt</div>
+            </div>
+          </div>
+          <p style="font-size:0.82rem;color:#77718A;">support@premiumhub.com • Official Digital Merchant</p>
+        </div>
+
+        <div style="text-align:right;">
+          <div style="font-size:1.5rem;font-weight:900;color:#211B35;letter-spacing:-0.5px;">INVOICE</div>
+          <div style="font-size:0.9rem;font-weight:700;color:#6C3BFF;" id="inv-number">INV-...</div>
+          <div style="font-size:0.8rem;color:#77718A;margin-top:2px;" id="inv-date">Date: ...</div>
+        </div>
+      </div>
+
+      <!-- Customer & Order Meta -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;">
+        <div style="background:#FAF8FE;padding:16px;border-radius:12px;border:1px solid #EAE5F7;">
+          <div style="font-size:0.75rem;font-weight:700;color:#77718A;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Billed To:</div>
+          <div style="font-size:1rem;font-weight:800;color:#211B35;" id="cust-name">Customer Name</div>
+          <div style="font-size:0.85rem;color:#6C3BFF;font-weight:700;margin-top:2px;">Profile UID: <span id="cust-uid">#0000</span></div>
+          <div style="font-size:0.82rem;color:#77718A;margin-top:2px;" id="cust-email">email@example.com</div>
+          <div style="font-size:0.82rem;color:#77718A;" id="cust-phone">WhatsApp: ...</div>
+        </div>
+
+        <div style="background:#FAF8FE;padding:16px;border-radius:12px;border:1px solid #EAE5F7;">
+          <div style="font-size:0.75rem;font-weight:700;color:#77718A;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Payment Summary:</div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:0.82rem;color:#77718A;">Order ID:</span>
+            <span style="font-weight:700;font-size:0.85rem;" id="inv-order-id">PH-...</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:0.82rem;color:#77718A;">Payment Status:</span>
+            <span id="inv-pay-badge"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="font-size:0.82rem;color:#77718A;">Order Status:</span>
+            <span id="inv-order-badge"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item Table -->
+      <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+        <thead>
+          <tr style="background:#F3EEFF;color:#4B22CC;">
+            <th style="text-align:left;padding:10px 14px;border-radius:8px 0 0 8px;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.5px;">Item Description</th>
+            <th style="text-align:center;padding:10px 14px;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.5px;">Qty</th>
+            <th style="text-align:right;padding:10px 14px;border-radius:0 8px 8px 0;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.5px;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:16px 14px;border-bottom:1px solid #EAE5F7;">
+              <div style="font-weight:800;color:#211B35;" id="item-name">Product Name</div>
+              <div style="font-size:0.78rem;color:#77718A;" id="item-method">Payment via: ...</div>
+            </td>
+            <td style="text-align:center;padding:16px 14px;border-bottom:1px solid #EAE5F7;font-weight:600;">1</td>
+            <td style="text-align:right;padding:16px 14px;border-bottom:1px solid #EAE5F7;font-weight:800;color:#6C3BFF;font-size:1.1rem;" id="item-price">₦0</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Total & Reference -->
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:1px solid #EAE5F7;padding-bottom:20px;margin-bottom:20px;">
+        <div style="max-width:380px;">
+          <div style="font-size:0.75rem;font-weight:700;color:#77718A;text-transform:uppercase;margin-bottom:4px;">Transaction Reference:</div>
+          <div style="font-family:monospace;font-size:0.85rem;background:#F1EFF8;padding:8px 12px;border-radius:6px;word-break:break-all;" id="inv-reference">
+            N/A
+          </div>
+        </div>
+
+        <div style="text-align:right;">
+          <div style="font-size:0.85rem;color:#77718A;">Total Paid / Billed</div>
+          <div style="font-size:1.6rem;font-weight:900;color:#6C3BFF;" id="inv-total">₦0</div>
+        </div>
+      </div>
+
+      <!-- Footer Note -->
+      <div style="text-align:center;font-size:0.78rem;color:#77718A;line-height:1.5;">
+        Thank you for your business! For inquiries or instant support, contact our team with your Profile UID and Order ID.<br>
+        Developed by <strong>MD ABDULLAH</strong> • Official Premiumhub Verified Electronic Invoice.
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { getInvoiceData, copyInvoiceLink, downloadInvoicePNG, downloadInvoicePDF } from "/js/invoice.js";
+    import { formatPrice } from "/js/products.js";
+    import { getStatusBadge } from "/js/orders.js";
+
+    async function initInvoice() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const orderId = urlParams.get("id");
+
+      if (!orderId) {
+        alert("Invoice ID is missing");
+        window.location.href = "/";
+        return;
+      }
+
+      try {
+        const order = await getInvoiceData(orderId);
+        const dateStr = order.createdAt?.seconds 
+          ? new Date(order.createdAt.seconds * 1000).toLocaleString() 
+          : new Date().toLocaleString();
+
+        document.getElementById("inv-number").textContent = `INV-${order.orderId.replace('PH-', '')}`;
+        document.getElementById("inv-date").textContent = `Date: ${dateStr}`;
+        document.getElementById("inv-order-id").textContent = order.orderId;
+        document.getElementById("cust-name").textContent = order.customerName || "Customer";
+        document.getElementById("cust-uid").textContent = `#${order.profileUID || '0000'}`;
+        document.getElementById("cust-email").textContent = order.customerEmail || "No Email";
+        document.getElementById("cust-phone").textContent = `WhatsApp: ${order.customerWhatsApp || 'N/A'}`;
+        document.getElementById("item-name").textContent = order.productName;
+        document.getElementById("item-method").textContent = `Payment via: ${order.paymentMethod || 'Crypto / Bank'}`;
+        document.getElementById("item-price").textContent = formatPrice(order.price);
+        document.getElementById("inv-total").textContent = formatPrice(order.price);
+        document.getElementById("inv-reference").textContent = order.transactionReference || "None";
+
+        document.getElementById("inv-pay-badge").innerHTML = getStatusBadge(order.paymentStatus || 'Unverified');
+        document.getElementById("inv-order-badge").innerHTML = getStatusBadge(order.orderStatus || 'Pending');
+
+        // Button Listeners
+        document.getElementById("btn-copy-link")?.addEventListener("click", () => copyInvoiceLink(order.orderId));
+        document.getElementById("btn-download-png")?.addEventListener("click", () => downloadInvoicePNG("invoice-paper", `invoice-${order.orderId}.png`));
+        document.getElementById("btn-download-pdf")?.addEventListener("click", () => downloadInvoicePDF("invoice-paper", `invoice-${order.orderId}.pdf`));
+
+      } catch (err) {
+        alert("Failed to load invoice: " + err.message);
+      }
+    }
+
+    initInvoice();
+  </script>
+</body>
+</html>

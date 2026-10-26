@@ -1,0 +1,171 @@
+/* ==========================================================================
+   PWA Install Popup & Banner Stylesheet
+   Supports both Premiumhub and PHAdmin install flows & iOS guides
+   ========================================================================== */
+
+.pwa-install-banner {
+  position: fixed;
+  bottom: 80px;
+  left: 16px;
+  right: 16px;
+  max-width: 440px;
+  margin: 0 auto;
+  background: #FFFFFF;
+  border-radius: 18px;
+  box-shadow: 0 12px 36px rgba(15, 12, 35, 0.18);
+  border: 1px solid #E6E2F5;
+  padding: 16px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: pwaSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (min-width: 768px) {
+  .pwa-install-banner {
+    bottom: 24px;
+    right: 24px;
+    left: auto;
+    margin: 0;
+  }
+}
+
+@keyframes pwaSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pwa-banner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pwa-banner-app {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pwa-banner-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(108, 59, 255, 0.2);
+}
+
+.pwa-banner-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #211B35;
+}
+
+.pwa-banner-sub {
+  font-size: 0.8rem;
+  color: #77718A;
+}
+
+.pwa-banner-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F1EFF8;
+  color: #77718A;
+  cursor: pointer;
+  border: none;
+}
+.pwa-banner-close:hover {
+  background: #E5E1F5;
+  color: #211B35;
+}
+
+.pwa-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pwa-btn-install {
+  flex: 1;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #6C3BFF, #4B22CC);
+  color: #FFFFFF;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  text-align: center;
+}
+.pwa-btn-install:hover {
+  transform: translateY(-1px);
+}
+
+.pwa-btn-later {
+  padding: 10px 14px;
+  background: #F3EEFF;
+  color: #6C3BFF;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+}
+.pwa-btn-later:hover {
+  background: #E8DEFF;
+}
+
+/* iOS Safari Guide Modal */
+.ios-guide-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 12, 26, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.ios-guide-box {
+  background: #FFFFFF;
+  border-radius: 20px;
+  max-width: 360px;
+  width: 100%;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+.ios-guide-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  margin: 0 auto 14px;
+}
+
+.ios-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  background: #F8F7FC;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-size: 0.88rem;
+  color: #211B35;
+}

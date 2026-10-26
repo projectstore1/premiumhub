@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout & Payment — Premiumhub</title>
+  <meta name="theme-color" content="#6C3BFF">
+  <link rel="manifest" href="/pwa/main.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/icons/premiumhub-192.png">
+  <link rel="icon" type="image/png" href="/assets/icons/premiumhub-192.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/install.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header-inner">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button onclick="window.history.back()" class="icon-btn" aria-label="Go Back">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </button>
+        <a href="/" class="brand">
+          <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
+          <span class="brand-text">Premiumhub Checkout</span>
+        </a>
+      </div>
+      <div id="auth-header-slot"></div>
+    </div>
+  </header>
+
+  <main class="container" style="padding: 24px 16px 60px;">
+    <div style="max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 24px;" id="checkout-grid">
+      
+      <!-- Checkout Form Card -->
+      <div class="card" id="checkout-main-card">
+        <h2 style="font-size:1.35rem;font-weight:800;margin-bottom:18px;">Complete Your Order</h2>
+
+        <!-- Product Preview Box -->
+        <div id="order-product-preview" style="background:#FAF9FE;border:1px solid var(--color-border);border-radius:12px;padding:16px;display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+          <div class="skeleton" style="width:64px;height:64px;border-radius:8px;"></div>
+          <div style="flex:1;">
+            <div class="skeleton" style="height:18px;width:70%;margin-bottom:8px;"></div>
+            <div class="skeleton" style="height:14px;width:40%;"></div>
+          </div>
+        </div>
+
+        <form id="checkout-form">
+          <!-- Step 1: Customer Contact Information -->
+          <div style="margin-bottom:24px;">
+            <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+              <span style="width:24px;height:24px;border-radius:50%;background:var(--color-primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:0.8rem;">1</span>
+              Customer Details
+            </h3>
+
+            <div class="form-group">
+              <label class="form-label">Full Name *</label>
+              <input type="text" id="cust-name" class="form-input" required placeholder="John Doe">
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr;gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Email Address (Order Confirmation) *</label>
+                <input type="email" id="cust-email" class="form-input" required placeholder="youremail@gmail.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label">WhatsApp Number (For Instant Delivery) *</label>
+                <input type="tel" id="cust-whatsapp" class="form-input" required placeholder="+234 812 345 6789">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Select Payment Method -->
+          <div style="margin-bottom:24px;">
+            <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+              <span style="width:24px;height:24px;border-radius:50%;background:var(--color-primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:0.8rem;">2</span>
+              Select Payment Method
+            </h3>
+
+            <!-- Payment Type Tabs -->
+            <div style="display:flex;gap:10px;margin-bottom:16px;">
+              <button type="button" class="btn btn-secondary" id="tab-btn-crypto" style="flex:1;">Crypto (USDT/SOL/USDC)</button>
+              <button type="button" class="btn btn-outline" id="tab-btn-bank" style="flex:1;">Naira Direct Bank Transfer</button>
+            </div>
+
+            <!-- Crypto Methods List -->
+            <div id="crypto-methods-container" style="display:flex;flex-direction:column;gap:10px;">
+              <div class="skeleton" style="height:60px;"></div>
+            </div>
+
+            <!-- Bank Accounts List -->
+            <div id="bank-methods-container" style="display:none;flex-direction:column;gap:10px;">
+              <div class="skeleton" style="height:60px;"></div>
+            </div>
+
+            <!-- Selected Method Details Display -->
+            <div id="selected-payment-display" style="margin-top:16px;background:var(--color-light-purple);border:1px solid #D2C8FF;border-radius:12px;padding:16px;">
+              <div style="font-weight:700;font-size:0.95rem;color:var(--color-dark-purple);margin-bottom:6px;">Payment Instructions</div>
+              <div id="selected-instructions" style="font-size:0.88rem;color:var(--color-text-main);margin-bottom:12px;"></div>
+              
+              <div style="display:flex;flex-direction:column;gap:8px;background:#FFF;padding:12px;border-radius:8px;border:1px solid #E2D7FF;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <span style="font-size:0.8rem;font-weight:700;color:var(--color-text-sub);text-transform:uppercase;" id="dest-label">Recipient Address / Account:</span>
+                  <button type="button" id="copy-address-btn" class="btn btn-sm btn-secondary" style="padding:3px 10px;font-size:0.78rem;">
+                    Copy
+                  </button>
+                </div>
+                <div id="dest-value" style="font-family:monospace;font-size:0.95rem;font-weight:700;color:var(--color-primary);word-break:break-all;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3: Transaction Reference Input -->
+          <div style="margin-bottom:24px;">
+            <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+              <span style="width:24px;height:24px;border-radius:50%;background:var(--color-primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:0.8rem;">3</span>
+              Payment Verification Reference
+            </h3>
+
+            <div class="form-group">
+              <label class="form-label">Transaction Hash / Session ID / Reference *</label>
+              <input type="text" id="tx-reference" class="form-input" required placeholder="e.g. 0x8a92f... or Bank Transfer Session ID">
+              <small style="color:var(--color-text-sub);font-size:0.8rem;">Enter the exact reference or TXID generated after completing payment so our system verifies your order instantly.</small>
+            </div>
+          </div>
+
+          <button type="submit" id="submit-order-btn" class="btn btn-primary btn-lg btn-block">
+            Confirm & Place Order →
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/install.js" defer></script>
+  <script type="module">
+    import { auth, db } from "/js/firebase-config.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+    import { getProductById, formatPrice } from "/js/products.js";
+    import { fetchPaymentMethods, createOrder } from "/js/checkout.js";
+    import { showToast } from "/js/auth.js";
+
+    let currentProduct = null;
+    let paymentConfig = null;
+    let selectedMethod = null;
+    let activePaymentType = 'crypto'; // 'crypto' or 'bank'
+
+    // Require Auth Check
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        showToast("Please sign in to complete your checkout", "info");
+        const currentUrl = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/login.html?redirect=${currentUrl}`;
+        return;
+      }
+
+      // Populate user info
+      const nameInput = document.getElementById("cust-name");
+      const emailInput = document.getElementById("cust-email");
+      const whatsappInput = document.getElementById("cust-whatsapp");
+
+      if (nameInput) nameInput.value = user.displayName || "";
+      if (emailInput) emailInput.value = user.email || "";
+
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists() && userDoc.data().whatsapp && whatsappInput) {
+          whatsappInput.value = userDoc.data().whatsapp;
+        }
+      } catch (e) {}
+    });
+
+    async function initCheckout() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const productId = urlParams.get("id");
+
+      if (!productId) {
+        window.location.href = "/";
+        return;
+      }
+
+      currentProduct = await getProductById(productId);
+      if (!currentProduct || !currentProduct.available) {
+        alert("Product is currently unavailable.");
+        window.location.href = "/";
+        return;
+      }
+
+      // Render product preview
+      const preview = document.getElementById("order-product-preview");
+      if (preview) {
+        preview.innerHTML = `
+          <img src="${currentProduct.image || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=120&q=80'}" style="width:68px;height:68px;border-radius:10px;object-fit:cover;" alt="">
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:1.05rem;color:var(--color-text-main);">${currentProduct.name}</div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin-top:2px;">
+              <span style="font-size:1.25rem;font-weight:800;color:var(--color-primary);">${formatPrice(currentProduct.price)}</span>
+              ${currentProduct.oldPrice ? `<span style="font-size:0.85rem;color:var(--color-text-sub);text-decoration:line-through;">${formatPrice(currentProduct.oldPrice)}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }
+
+      // Load Payment Methods
+      paymentConfig = await fetchPaymentMethods();
+      renderPaymentOptions();
+    }
+
+    function renderPaymentOptions() {
+      const cryptoContainer = document.getElementById("crypto-methods-container");
+      const bankContainer = document.getElementById("bank-methods-container");
+
+      if (cryptoContainer) {
+        cryptoContainer.innerHTML = paymentConfig.crypto.map((c, idx) => `
+          <label style="border:1px solid var(--color-border);padding:12px 14px;border-radius:10px;display:flex;align-items:center;gap:12px;cursor:pointer;background:#FFF;">
+            <input type="radio" name="pay-option" value="crypto-${c.id}" ${idx === 0 ? 'checked' : ''} style="accent-color:var(--color-primary);width:18px;height:18px;">
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:0.95rem;">${c.name} <span style="font-size:0.8rem;color:var(--color-primary);">(${c.network})</span></div>
+              <div style="font-size:0.75rem;color:var(--color-text-sub);">Direct wallet transfer</div>
+            </div>
+          </label>
+        `).join("");
+      }
+
+      if (bankContainer) {
+        bankContainer.innerHTML = paymentConfig.bank.map((b, idx) => `
+          <label style="border:1px solid var(--color-border);padding:12px 14px;border-radius:10px;display:flex;align-items:center;gap:12px;cursor:pointer;background:#FFF;">
+            <input type="radio" name="pay-option" value="bank-${b.id}" style="accent-color:var(--color-primary);width:18px;height:18px;">
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:0.95rem;">${b.bankName}</div>
+              <div style="font-size:0.75rem;color:var(--color-text-sub);">${b.accountHolder} • ${b.accountNumber}</div>
+            </div>
+          </label>
+        `).join("");
+      }
+
+      // Set initial selected
+      if (paymentConfig.crypto.length > 0) {
+        selectMethod(paymentConfig.crypto[0], 'crypto');
+      }
+
+      // Listeners for radio change
+      document.querySelectorAll('input[name="pay-option"]').forEach(radio => {
+        radio.addEventListener("change", (e) => {
+          const val = e.target.value;
+          if (val.startsWith("crypto-")) {
+            const id = val.replace("crypto-", "");
+            const m = paymentConfig.crypto.find(x => x.id === id);
+            selectMethod(m, 'crypto');
+          } else {
+            const id = val.replace("bank-", "");
+            const m = paymentConfig.bank.find(x => x.id === id);
+            selectMethod(m, 'bank');
+          }
+        });
+      });
+    }
+
+    function selectMethod(method, type) {
+      selectedMethod = method;
+      activePaymentType = type;
+
+      const instructionsEl = document.getElementById("selected-instructions");
+      const destLabel = document.getElementById("dest-label");
+      const destValue = document.getElementById("dest-value");
+
+      if (type === 'crypto') {
+        destLabel.textContent = `Wallet Address (${method.network}):`;
+        destValue.textContent = method.address;
+        instructionsEl.textContent = method.instructions || "Send exact amount to address below and enter tx hash.";
+      } else {
+        destLabel.textContent = `${method.bankName} Account Number:`;
+        destValue.textContent = `${method.accountNumber} (${method.accountHolder})`;
+        instructionsEl.textContent = method.instructions || "Transfer amount to the bank account and enter your transfer reference below.";
+      }
+    }
+
+    // Toggle Payment Tabs
+    document.getElementById("tab-btn-crypto")?.addEventListener("click", () => {
+      document.getElementById("tab-btn-crypto").className = "btn btn-secondary";
+      document.getElementById("tab-btn-bank").className = "btn btn-outline";
+      document.getElementById("crypto-methods-container").style.display = "flex";
+      document.getElementById("bank-methods-container").style.display = "none";
+      if (paymentConfig.crypto.length > 0) {
+        selectMethod(paymentConfig.crypto[0], 'crypto');
+        const first = document.querySelector('input[name="pay-option"][value^="crypto-"]');
+        if (first) first.checked = true;
+      }
+    });
+
+    document.getElementById("tab-btn-bank")?.addEventListener("click", () => {
+      document.getElementById("tab-btn-bank").className = "btn btn-secondary";
+      document.getElementById("tab-btn-crypto").className = "btn btn-outline";
+      document.getElementById("crypto-methods-container").style.display = "none";
+      document.getElementById("bank-methods-container").style.display = "flex";
+      if (paymentConfig.bank.length > 0) {
+        selectMethod(paymentConfig.bank[0], 'bank');
+        const first = document.querySelector('input[name="pay-option"][value^="bank-"]');
+        if (first) first.checked = true;
+      }
+    });
+
+    // Copy Address/Account Button
+    document.getElementById("copy-address-btn")?.addEventListener("click", () => {
+      const val = document.getElementById("dest-value")?.textContent;
+      if (val) {
+        const textToCopy = val.split(" (")[0];
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showToast("Copied to clipboard!", "success");
+        });
+      }
+    });
+
+    // Handle Form Submit
+    document.getElementById("checkout-form")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById("submit-order-btn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Processing & Saving Order...";
+
+      try {
+        const custName = document.getElementById("cust-name").value.trim();
+        const custEmail = document.getElementById("cust-email").value.trim();
+        const custWhatsApp = document.getElementById("cust-whatsapp").value.trim();
+        const txRef = document.getElementById("tx-reference").value.trim();
+
+        const methodName = activePaymentType === 'crypto'
+          ? `${selectedMethod.name} (${selectedMethod.network})`
+          : `${selectedMethod.bankName} Bank Transfer`;
+
+        const result = await createOrder({
+          productId: currentProduct.id,
+          customerName: custName,
+          customerEmail: custEmail,
+          customerWhatsApp: custWhatsApp,
+          paymentMethod: methodName,
+          paymentNetwork: selectedMethod.network || "Bank NGN",
+          paymentDetails: selectedMethod.address || selectedMethod.accountNumber,
+          transactionReference: txRef
+        });
+
+        showToast("Order placed successfully! Redirecting...", "success");
+        setTimeout(() => {
+          window.location.href = `/success.html?id=${result.orderId}`;
+        }, 800);
+
+      } catch (err) {
+        showToast(err.message || "Failed to submit order", "error");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Confirm & Place Order →";
+      }
+    });
+
+    initCheckout();
+  </script>
+</body>
+</html>
