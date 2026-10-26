@@ -10,29 +10,29 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Premiumhub">
-  <link rel="manifest" href="/pwa/main.webmanifest">
-  <link rel="apple-touch-icon" href="/assets/icons/premiumhub-192.png">
-  <link rel="icon" type="image/png" href="/assets/icons/premiumhub-192.png">
+  <link rel="manifest" href="./pwa/main.webmanifest">
+  <link rel="apple-touch-icon" href="./assets/icons/premiumhub-192.png">
+  <link rel="icon" type="image/png" href="./assets/icons/premiumhub-192.png">
   
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/install.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/install.css">
 </head>
 <body>
 
   <!-- Top Sticky Header -->
   <header class="header">
     <div class="container header-inner">
-      <a href="/" class="brand">
-        <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub Logo" class="brand-logo-img">
+      <a href="./index.html" class="brand">
+        <img src="./assets/icons/premiumhub-192.png" alt="Premiumhub Logo" class="brand-logo-img">
         <span class="brand-text">Premiumhub</span>
       </a>
 
       <div class="header-actions">
-        <a href="/search.html" class="icon-btn" aria-label="Search Store">
+        <a href="./search.html" class="icon-btn" aria-label="Search Store">
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </a>
         <div id="auth-header-slot">
-          <a href="/login.html" class="header-btn header-btn-primary">Sign In</a>
+          <a href="./login.html" class="header-btn header-btn-primary">Sign In</a>
         </div>
       </div>
     </div>
@@ -75,7 +75,7 @@
     <section id="products" style="padding: 10px 0 40px;">
       <div class="section-title-wrap">
         <h2 class="section-title">Trending Products</h2>
-        <a href="/search.html" style="color:var(--color-primary);font-size:0.9rem;font-weight:700;">View All →</a>
+        <a href="./search.html" style="color:var(--color-primary);font-size:0.9rem;font-weight:700;">View All →</a>
       </div>
 
       <!-- Categories Filter -->
@@ -104,7 +104,7 @@
       <div class="footer-grid">
         <div>
           <div class="brand" style="margin-bottom:8px;">
-            <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
+            <img src="./assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
             <span class="brand-text">Premiumhub</span>
           </div>
           <p class="footer-brand-p">
@@ -114,10 +114,10 @@
         <div>
           <h4 class="footer-title">Customer Care</h4>
           <ul class="footer-links">
-            <li><a href="/my-orders.html">My Orders</a></li>
-            <li><a href="/settings.html">App Settings</a></li>
-            <li><a href="/offline.html">Offline Mode</a></li>
-            <li><a href="/admin/index.html">Admin Portal</a></li>
+            <li><a href="./my-orders.html">My Orders</a></li>
+            <li><a href="./settings.html">App Settings</a></li>
+            <li><a href="./offline.html">Offline Mode</a></li>
+            <li><a href="./admin/index.html">Admin Portal</a></li>
           </ul>
         </div>
         <div>
@@ -139,30 +139,30 @@
 
   <!-- Fixed Mobile Bottom Navigation -->
   <nav class="mobile-nav">
-    <a href="/" class="mobile-nav-item active">
+    <a href="./index.html" class="mobile-nav-item active">
       <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
       <span>Home</span>
     </a>
-    <a href="/my-orders.html" class="mobile-nav-item">
+    <a href="./my-orders.html" class="mobile-nav-item">
       <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
       <span>My Orders</span>
     </a>
-    <a href="/search.html" class="mobile-nav-item">
+    <a href="./search.html" class="mobile-nav-item">
       <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       <span>Search</span>
     </a>
-    <a href="/settings.html" class="mobile-nav-item">
+    <a href="./settings.html" class="mobile-nav-item">
       <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       <span>Settings</span>
     </a>
   </nav>
 
   <!-- PWA Install Controller & Scripts -->
-  <script src="/js/install.js" defer></script>
+  <script type="module" src="./js/install.js"></script>
   <script type="module">
-    import { auth } from "/js/firebase-config.js";
+    import { auth } from "./js/firebase-config.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-    import { fetchProducts, fetchBanners, fetchSiteNotice, formatPrice } from "/js/products.js";
+    import { fetchProducts, fetchBanners, fetchSiteNotice, formatPrice } from "./js/products.js";
 
     // Setup Header Auth State
     onAuthStateChanged(auth, (user) => {
@@ -170,7 +170,7 @@
       if (!slot) return;
       if (user) {
         slot.innerHTML = `
-          <a href="/profile.html" class="header-btn header-btn-ghost" title="My Profile">
+          <a href="./profile.html" class="header-btn header-btn-ghost" title="My Profile">
             <div style="width:28px;height:28px;border-radius:50%;background:var(--color-primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;">
               ${(user.displayName || user.email || 'U')[0].toUpperCase()}
             </div>
@@ -178,7 +178,7 @@
           </a>
         `;
       } else {
-        slot.innerHTML = `<a href="/login.html" class="header-btn header-btn-primary">Sign In</a>`;
+        slot.innerHTML = `<a href="./login.html" class="header-btn header-btn-primary">Sign In</a>`;
       }
     });
 
@@ -258,7 +258,7 @@
       }
 
       grid.innerHTML = products.map(p => `
-        <a href="/product.html?id=${p.id}" class="product-card">
+        <a href="./product.html?id=${p.id}" class="product-card">
           <div class="product-media">
             <img src="${p.image || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=400&q=80'}" alt="${p.name}" class="product-img" loading="lazy">
             <span class="product-badge-avail ${p.available ? '' : 'product-badge-out'}">${p.available ? 'In Stock' : 'Sold Out'}</span>

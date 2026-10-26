@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Official Invoice — Premiumhub</title>
   <meta name="theme-color" content="#6C3BFF">
-  <link rel="manifest" href="/pwa/main.webmanifest">
-  <link rel="apple-touch-icon" href="/assets/icons/premiumhub-192.png">
-  <link rel="icon" type="image/png" href="/assets/icons/premiumhub-192.png">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="manifest" href="./pwa/main.webmanifest">
+  <link rel="apple-touch-icon" href="./assets/icons/premiumhub-192.png">
+  <link rel="icon" type="image/png" href="./assets/icons/premiumhub-192.png">
+  <link rel="stylesheet" href="./css/style.css">
 
-  <!-- Export libraries for genuine PDF & PNG generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -30,13 +29,13 @@
         <button onclick="window.history.back()" class="icon-btn" aria-label="Go Back">
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
         </button>
-        <a href="/" class="brand">
-          <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
+        <a href="./index.html" class="brand">
+          <img src="./assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
           <span class="brand-text">Premiumhub</span>
         </a>
       </div>
       <div style="display:flex;gap:8px;">
-        <a href="/my-orders.html" class="header-btn header-btn-ghost">My Orders</a>
+        <a href="./my-orders.html" class="header-btn header-btn-ghost">My Orders</a>
       </div>
     </div>
   </header>
@@ -66,7 +65,7 @@
       <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #F1EEFA;padding-bottom:24px;margin-bottom:24px;">
         <div>
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
-            <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub" style="width:48px;height:48px;border-radius:10px;object-fit:cover;">
+            <img src="./assets/icons/premiumhub-192.png" alt="Premiumhub" style="width:48px;height:48px;border-radius:10px;object-fit:cover;">
             <div>
               <h2 style="font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,#6C3BFF,#4B22CC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Premiumhub</h2>
               <div style="font-size:0.75rem;color:#77718A;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Verified Store Receipt</div>
@@ -154,9 +153,9 @@
   </main>
 
   <script type="module">
-    import { getInvoiceData, copyInvoiceLink, downloadInvoicePNG, downloadInvoicePDF } from "/js/invoice.js";
-    import { formatPrice } from "/js/products.js";
-    import { getStatusBadge } from "/js/orders.js";
+    import { getInvoiceData, copyInvoiceLink, downloadInvoicePNG, downloadInvoicePDF } from "./js/invoice.js";
+    import { formatPrice } from "./js/products.js";
+    import { getStatusBadge } from "./js/orders.js";
 
     async function initInvoice() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -164,7 +163,7 @@
 
       if (!orderId) {
         alert("Invoice ID is missing");
-        window.location.href = "/";
+        window.location.href = "./index.html";
         return;
       }
 

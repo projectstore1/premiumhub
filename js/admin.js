@@ -22,7 +22,7 @@ export async function verifyAdminAuth() {
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         if (!window.location.pathname.endsWith("/admin/") && !window.location.pathname.endsWith("/admin/index.html")) {
-          window.location.href = "/admin/index.html";
+          window.location.href = "./index.html";
         }
         resolve(null);
         return;
@@ -56,7 +56,7 @@ export async function verifyAdminAuth() {
         } else {
           showToast("Access Denied: Administrator role required.", "error");
           await signOut(auth);
-          window.location.href = "/admin/index.html";
+          window.location.href = "./index.html";
           resolve(null);
         }
       } catch (err) {
@@ -90,7 +90,7 @@ export function initAdminSidebar() {
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
       showToast("Signed out from PHAdmin", "info");
-      window.location.href = "/admin/index.html";
+      window.location.href = "./index.html";
     });
   }
 
@@ -158,7 +158,7 @@ export async function loadDashboardStats() {
       } else {
         recentTable.innerHTML = recent.map(o => `
           <tr>
-            <td style="font-weight:700;"><a href="/admin/orders.html?id=${o.orderId}" style="color:var(--admin-primary);">${o.orderId}</a></td>
+            <td style="font-weight:700;"><a href="./orders.html?id=${o.orderId}" style="color:var(--admin-primary);">${o.orderId}</a></td>
             <td>${o.customerName || 'Customer'} (#${o.profileUID || 'N/A'})</td>
             <td>${o.productName}</td>
             <td style="font-weight:700;">${formatPrice(o.price)}</td>

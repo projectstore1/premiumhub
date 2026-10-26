@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout & Payment — Premiumhub</title>
   <meta name="theme-color" content="#6C3BFF">
-  <link rel="manifest" href="/pwa/main.webmanifest">
-  <link rel="apple-touch-icon" href="/assets/icons/premiumhub-192.png">
-  <link rel="icon" type="image/png" href="/assets/icons/premiumhub-192.png">
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/install.css">
+  <link rel="manifest" href="./pwa/main.webmanifest">
+  <link rel="apple-touch-icon" href="./assets/icons/premiumhub-192.png">
+  <link rel="icon" type="image/png" href="./assets/icons/premiumhub-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/install.css">
 </head>
 <body>
 
@@ -19,8 +19,8 @@
         <button onclick="window.history.back()" class="icon-btn" aria-label="Go Back">
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
         </button>
-        <a href="/" class="brand">
-          <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
+        <a href="./index.html" class="brand">
+          <img src="./assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
           <span class="brand-text">Premiumhub Checkout</span>
         </a>
       </div>
@@ -131,30 +131,28 @@
     </div>
   </main>
 
-  <script src="/js/install.js" defer></script>
+  <script type="module" src="./js/install.js"></script>
   <script type="module">
-    import { auth, db } from "/js/firebase-config.js";
+    import { auth, db } from "./js/firebase-config.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-    import { getProductById, formatPrice } from "/js/products.js";
-    import { fetchPaymentMethods, createOrder } from "/js/checkout.js";
-    import { showToast } from "/js/auth.js";
+    import { getProductById, formatPrice } from "./js/products.js";
+    import { fetchPaymentMethods, createOrder } from "./js/checkout.js";
+    import { showToast } from "./js/auth.js";
 
     let currentProduct = null;
     let paymentConfig = null;
     let selectedMethod = null;
-    let activePaymentType = 'crypto'; // 'crypto' or 'bank'
+    let activePaymentType = 'crypto';
 
-    // Require Auth Check
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         showToast("Please sign in to complete your checkout", "info");
         const currentUrl = encodeURIComponent(window.location.pathname + window.location.search);
-        window.location.href = `/login.html?redirect=${currentUrl}`;
+        window.location.href = `./login.html?redirect=${currentUrl}`;
         return;
       }
 
-      // Populate user info
       const nameInput = document.getElementById("cust-name");
       const emailInput = document.getElementById("cust-email");
       const whatsappInput = document.getElementById("cust-whatsapp");
@@ -175,18 +173,17 @@
       const productId = urlParams.get("id");
 
       if (!productId) {
-        window.location.href = "/";
+        window.location.href = "./index.html";
         return;
       }
 
       currentProduct = await getProductById(productId);
       if (!currentProduct || !currentProduct.available) {
         alert("Product is currently unavailable.");
-        window.location.href = "/";
+        window.location.href = "./index.html";
         return;
       }
 
-      // Render product preview
       const preview = document.getElementById("order-product-preview");
       if (preview) {
         preview.innerHTML = `
@@ -201,7 +198,6 @@
         `;
       }
 
-      // Load Payment Methods
       paymentConfig = await fetchPaymentMethods();
       renderPaymentOptions();
     }
@@ -234,12 +230,10 @@
         `).join("");
       }
 
-      // Set initial selected
       if (paymentConfig.crypto.length > 0) {
         selectMethod(paymentConfig.crypto[0], 'crypto');
       }
 
-      // Listeners for radio change
       document.querySelectorAll('input[name="pay-option"]').forEach(radio => {
         radio.addEventListener("change", (e) => {
           const val = e.target.value;
@@ -275,7 +269,6 @@
       }
     }
 
-    // Toggle Payment Tabs
     document.getElementById("tab-btn-crypto")?.addEventListener("click", () => {
       document.getElementById("tab-btn-crypto").className = "btn btn-secondary";
       document.getElementById("tab-btn-bank").className = "btn btn-outline";
@@ -300,7 +293,6 @@
       }
     });
 
-    // Copy Address/Account Button
     document.getElementById("copy-address-btn")?.addEventListener("click", () => {
       const val = document.getElementById("dest-value")?.textContent;
       if (val) {
@@ -311,7 +303,6 @@
       }
     });
 
-    // Handle Form Submit
     document.getElementById("checkout-form")?.addEventListener("submit", async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById("submit-order-btn");
@@ -341,7 +332,7 @@
 
         showToast("Order placed successfully! Redirecting...", "success");
         setTimeout(() => {
-          window.location.href = `/success.html?id=${result.orderId}`;
+          window.location.href = `./success.html?id=${result.orderId}`;
         }, 800);
 
       } catch (err) {

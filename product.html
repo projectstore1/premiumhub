@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Details — Premiumhub</title>
   <meta name="theme-color" content="#6C3BFF">
-  <link rel="manifest" href="/pwa/main.webmanifest">
-  <link rel="apple-touch-icon" href="/assets/icons/premiumhub-192.png">
-  <link rel="icon" type="image/png" href="/assets/icons/premiumhub-192.png">
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/install.css">
+  <link rel="manifest" href="./pwa/main.webmanifest">
+  <link rel="apple-touch-icon" href="./assets/icons/premiumhub-192.png">
+  <link rel="icon" type="image/png" href="./assets/icons/premiumhub-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/install.css">
 </head>
 <body>
 
@@ -19,13 +19,13 @@
         <button onclick="window.history.back()" class="icon-btn" aria-label="Go Back">
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
         </button>
-        <a href="/" class="brand">
-          <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
+        <a href="./index.html" class="brand">
+          <img src="./assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
           <span class="brand-text">Premiumhub</span>
         </a>
       </div>
       <div id="auth-header-slot">
-        <a href="/login.html" class="header-btn header-btn-primary">Sign In</a>
+        <a href="./login.html" class="header-btn header-btn-primary">Sign In</a>
       </div>
     </div>
   </header>
@@ -43,36 +43,36 @@
 
   <!-- Mobile Bottom Navigation -->
   <nav class="mobile-nav">
-    <a href="/" class="mobile-nav-item">
+    <a href="./index.html" class="mobile-nav-item">
       <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
       <span>Home</span>
     </a>
-    <a href="/my-orders.html" class="mobile-nav-item">
+    <a href="./my-orders.html" class="mobile-nav-item">
       <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
       <span>My Orders</span>
     </a>
-    <a href="/search.html" class="mobile-nav-item">
+    <a href="./search.html" class="mobile-nav-item">
       <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       <span>Search</span>
     </a>
-    <a href="/settings.html" class="mobile-nav-item">
+    <a href="./settings.html" class="mobile-nav-item">
       <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       <span>Settings</span>
     </a>
   </nav>
 
-  <script src="/js/install.js" defer></script>
+  <script type="module" src="./js/install.js"></script>
   <script type="module">
-    import { auth } from "/js/firebase-config.js";
+    import { auth } from "./js/firebase-config.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-    import { getProductById, formatPrice } from "/js/products.js";
+    import { getProductById, formatPrice } from "./js/products.js";
 
     onAuthStateChanged(auth, (user) => {
       const slot = document.getElementById("auth-header-slot");
       if (!slot) return;
       if (user) {
         slot.innerHTML = `
-          <a href="/profile.html" class="header-btn header-btn-ghost">
+          <a href="./profile.html" class="header-btn header-btn-ghost">
             <div style="width:28px;height:28px;border-radius:50%;background:var(--color-primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;">
               ${(user.displayName || user.email || 'U')[0].toUpperCase()}
             </div>
@@ -88,13 +88,13 @@
       const container = document.getElementById("product-details-container");
 
       if (!productId) {
-        container.innerHTML = `<div class="card" style="text-align:center;padding:48px;"><h3 style="font-size:1.2rem;font-weight:700;">No product specified</h3><a href="/" class="btn btn-primary" style="margin-top:16px;">Back to Shop</a></div>`;
+        container.innerHTML = `<div class="card" style="text-align:center;padding:48px;"><h3 style="font-size:1.2rem;font-weight:700;">No product specified</h3><a href="./index.html" class="btn btn-primary" style="margin-top:16px;">Back to Shop</a></div>`;
         return;
       }
 
       const product = await getProductById(productId);
       if (!product) {
-        container.innerHTML = `<div class="card" style="text-align:center;padding:48px;"><h3 style="font-size:1.2rem;font-weight:700;">Product not found or removed</h3><a href="/" class="btn btn-primary" style="margin-top:16px;">Back to Shop</a></div>`;
+        container.innerHTML = `<div class="card" style="text-align:center;padding:48px;"><h3 style="font-size:1.2rem;font-weight:700;">Product not found or removed</h3><a href="./index.html" class="btn btn-primary" style="margin-top:16px;">Back to Shop</a></div>`;
         return;
       }
 
@@ -133,7 +133,7 @@
               </div>
 
               <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px;">
-                <a href="/checkout.html?id=${product.id}" class="btn btn-primary btn-lg btn-block" style="${product.available ? '' : 'pointer-events:none;opacity:0.5;'}">
+                <a href="./checkout.html?id=${product.id}" class="btn btn-primary btn-lg btn-block" style="${product.available ? '' : 'pointer-events:none;opacity:0.5;'}">
                   ${product.available ? 'Buy Now — Instant Checkout →' : 'Currently Unavailable'}
                 </a>
                 <button onclick="window.history.back()" class="btn btn-outline btn-block">

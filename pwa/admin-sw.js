@@ -1,19 +1,25 @@
-// PHAdmin Service Worker (Admin scope: /admin/)
-const CACHE_NAME = 'phadmin-v1';
-const STATIC_ASSETS = [
-  '/admin/index.html',
-  '/admin/dashboard.html',
-  '/admin/offline.html',
-  '/css/admin.css',
-  '/css/install.css',
-  '/assets/icons/phadmin-192.png',
-  '/assets/icons/phadmin-512.png'
-];
+// PHAdmin Service Worker
+const CACHE_NAME = 'phadmin-v2';
 
 self.addEventListener('install', (event) => {
+  const BASE = new URL('../', self.location).href;
+  const STATIC_ASSETS = [
+    new URL('admin/index.html', BASE).href,
+    new URL('admin/dashboard.html', BASE).href,
+    new URL('admin/offline.html', BASE).href,
+    new URL('css/admin.css', BASE).href,
+    new URL('css/install.css', BASE).href,
+    new URL('assets/icons/phadmin-192.png', BASE).href,
+    new URL('assets/icons/phadmin-512.png', BASE).href
+  ];
+
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
+      return Promise.allSettled(
+        STATIC_ASSETS.map((asset) =>
+          cache.add(asset).catch((err) => console.warn('[PWA Admin] Cache skip:', asset, err))
+        )
+      );
     }).then(() => self.skipWaiting())
   );
 });
@@ -32,12 +38,10 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Only handle admin scope
-  if (!url.pathname.startsWith('/admin')) {
+  if (!url.pathname.includes('/admin')) {
     return;
   }
 
-  // Never cache Firestore API, Auth, sensitive data, or POST
   if (
     event.request.method !== 'GET' ||
     url.hostname.includes('firestore.googleapis.com') ||
@@ -67,14 +71,17 @@ self.addEventListener('fetch', (event) => {
         ) {
           return networkResponse;
         }
+
         const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseToCache);
         });
+
         return networkResponse;
       }).catch(() => {
         if (event.request.mode === 'navigate') {
-          return caches.match('/admin/offline.html');
+          const BASE = new URL('../', self.location).href;
+          return caches.match(new URL('admin/offline.html', BASE).href);
         }
       });
     })

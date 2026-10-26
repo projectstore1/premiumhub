@@ -1,23 +1,28 @@
 // Premiumhub Service Worker
-const CACHE_NAME = 'premiumhub-v1';
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/search.html',
-  '/settings.html',
-  '/offline.html',
-  '/css/style.css',
-  '/css/install.css',
-  '/js/firebase-config.js',
-  '/js/install.js',
-  '/assets/icons/premiumhub-192.png',
-  '/assets/icons/premiumhub-512.png'
-];
+const CACHE_NAME = 'premiumhub-v2';
 
 self.addEventListener('install', (event) => {
+  const BASE = new URL('./', self.location).href;
+  const STATIC_ASSETS = [
+    new URL('index.html', BASE).href,
+    new URL('search.html', BASE).href,
+    new URL('settings.html', BASE).href,
+    new URL('offline.html', BASE).href,
+    new URL('css/style.css', BASE).href,
+    new URL('css/install.css', BASE).href,
+    new URL('js/firebase-config.js', BASE).href,
+    new URL('js/install.js', BASE).href,
+    new URL('assets/icons/premiumhub-192.png', BASE).href,
+    new URL('assets/icons/premiumhub-512.png', BASE).href
+  ];
+
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
+      return Promise.allSettled(
+        STATIC_ASSETS.map((asset) =>
+          cache.add(asset).catch((err) => console.warn('[PWA] Cache skip:', asset, err))
+        )
+      );
     }).then(() => self.skipWaiting())
   );
 });
@@ -37,7 +42,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   // Never intercept admin pages from main service worker
-  if (url.pathname.startsWith('/admin')) {
+  if (url.pathname.includes('/admin')) {
     return;
   }
 
@@ -55,7 +60,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Fetch in background for freshness
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
@@ -72,15 +76,17 @@ self.addEventListener('fetch', (event) => {
         ) {
           return networkResponse;
         }
+
         const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseToCache);
         });
+
         return networkResponse;
       }).catch(() => {
-        // Fallback for navigation requests
         if (event.request.mode === 'navigate') {
-          return caches.match('/offline.html');
+          const BASE = new URL('./', self.location).href;
+          return caches.match(new URL('offline.html', BASE).href);
         }
       });
     })

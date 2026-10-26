@@ -101,7 +101,7 @@ export async function logoutUser() {
   try {
     await signOut(auth);
     showToast("Logged out successfully", "info");
-    window.location.href = "/";
+    window.location.href = "./index.html";
   } catch (error) {
     showToast(error.message || "Logout failed", "error");
   }

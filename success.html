@@ -5,22 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Order Successful — Premiumhub</title>
   <meta name="theme-color" content="#6C3BFF">
-  <link rel="manifest" href="/pwa/main.webmanifest">
-  <link rel="apple-touch-icon" href="/assets/icons/premiumhub-192.png">
-  <link rel="icon" type="image/png" href="/assets/icons/premiumhub-192.png">
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/install.css">
+  <link rel="manifest" href="./pwa/main.webmanifest">
+  <link rel="apple-touch-icon" href="./assets/icons/premiumhub-192.png">
+  <link rel="icon" type="image/png" href="./assets/icons/premiumhub-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/install.css">
 </head>
 <body>
 
   <header class="header">
     <div class="container header-inner">
-      <a href="/" class="brand">
-        <img src="/assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
+      <a href="./index.html" class="brand">
+        <img src="./assets/icons/premiumhub-192.png" alt="Premiumhub" class="brand-logo-img">
         <span class="brand-text">Premiumhub</span>
       </a>
       <div>
-        <a href="/my-orders.html" class="header-btn header-btn-ghost">My Orders</a>
+        <a href="./my-orders.html" class="header-btn header-btn-ghost">My Orders</a>
       </div>
     </div>
   </header>
@@ -45,18 +45,18 @@
           View & Download Official Invoice →
         </a>
         <div style="display: flex; gap: 10px;">
-          <a href="/my-orders.html" class="btn btn-secondary" style="flex:1;">View My Orders</a>
-          <a href="/" class="btn btn-outline" style="flex:1;">Return to Shop</a>
+          <a href="./my-orders.html" class="btn btn-secondary" style="flex:1;">View My Orders</a>
+          <a href="./index.html" class="btn btn-outline" style="flex:1;">Return to Shop</a>
         </div>
       </div>
     </div>
   </main>
 
-  <script src="/js/install.js" defer></script>
+  <script type="module" src="./js/install.js"></script>
   <script type="module">
-    import { db } from "/js/firebase-config.js";
+    import { db } from "./js/firebase-config.js";
     import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-    import { formatPrice } from "/js/products.js";
+    import { formatPrice } from "./js/products.js";
 
     async function loadSuccessDetails() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -65,12 +65,12 @@
       const invLink = document.getElementById("invoice-btn-link");
 
       if (!orderId) {
-        window.location.href = "/";
+        window.location.href = "./index.html";
         return;
       }
 
       if (invLink) {
-        invLink.href = `/invoice.html?id=${encodeURIComponent(orderId)}`;
+        invLink.href = `./invoice.html?id=${encodeURIComponent(orderId)}`;
       }
 
       try {
@@ -81,10 +81,6 @@
         }
 
         const o = snap.data();
-        const dateStr = o.createdAt?.seconds 
-          ? new Date(o.createdAt.seconds * 1000).toLocaleString() 
-          : new Date().toLocaleString();
-
         summaryBox.innerHTML = `
           <div style="display:flex;justify-content:space-between;border-bottom:1px solid #E6E4F0;padding-bottom:12px;margin-bottom:12px;">
             <span style="font-size:0.85rem;color:var(--color-text-sub);">Order ID:</span>

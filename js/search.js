@@ -28,7 +28,7 @@ export async function initSearchPage() {
     if (countEl) countEl.textContent = `${products.length} products found`;
 
     resultsContainer.innerHTML = products.map(p => `
-      <a href="/product.html?id=${p.id}" class="product-card">
+      <a href="./product.html?id=${p.id}" class="product-card">
         <div class="product-media">
           <img src="${p.image || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=400&q=80'}" alt="${p.name}" class="product-img" loading="lazy">
           <span class="product-badge-avail ${p.available ? '' : 'product-badge-out'}">${p.available ? 'In Stock' : 'Sold Out'}</span>

@@ -10,7 +10,7 @@ export function initProfilePage() {
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      window.location.href = "/login.html?redirect=/profile.html";
+      window.location.href = "./login.html?redirect=profile.html";
       return;
     }
 
@@ -68,7 +68,7 @@ export function initProfilePage() {
           </form>
 
           <div style="margin-top:20px;display:flex;justify-content:space-between;border-top:1px solid var(--color-border);padding-top:16px;">
-            <a href="/my-orders.html" class="btn btn-secondary btn-sm">View My Orders</a>
+            <a href="./my-orders.html" class="btn btn-secondary btn-sm">View My Orders</a>
             <button id="logout-btn" class="btn btn-outline btn-sm" style="color:var(--color-error);">Log Out</button>
           </div>
         </div>
@@ -96,7 +96,7 @@ export function initProfilePage() {
       document.getElementById("logout-btn")?.addEventListener("click", () => {
         auth.signOut().then(() => {
           showToast("Logged out", "info");
-          window.location.href = "/";
+          window.location.href = "./index.html";
         });
       });
     } catch (err) {

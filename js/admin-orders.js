@@ -131,7 +131,7 @@ export async function initOrdersPage() {
             <h3 style="font-size:1.2rem;font-weight:800;color:var(--admin-text-main);">${order.orderId}</h3>
             <span style="font-size:0.8rem;color:var(--admin-text-sub);">Created: ${order.createdAt?.seconds ? new Date(order.createdAt.seconds * 1000).toLocaleString() : 'N/A'}</span>
           </div>
-          <a href="/invoice.html?id=${order.orderId}" target="_blank" class="btn btn-outline btn-sm">View Public Invoice ↗</a>
+          <a href="../invoice.html?id=${order.orderId}" target="_blank" class="btn btn-outline btn-sm">View Public Invoice ↗</a>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;background:#FAF9FE;padding:14px;border-radius:12px;">

@@ -34,7 +34,7 @@ export async function getInvoiceData(orderId) {
 
 // Copy invoice link to clipboard
 export function copyInvoiceLink(orderId) {
-  const url = `${window.location.origin}/invoice.html?id=${encodeURIComponent(orderId)}`;
+  const url = window.location.href;
   navigator.clipboard.writeText(url)
     .then(() => showToast("Invoice link copied to clipboard!", "success"))
     .catch(() => showToast("Could not copy link", "error"));

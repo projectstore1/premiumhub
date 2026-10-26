@@ -1,15 +1,16 @@
 // PWA Registration and Dual Install Popup Controller
 
 (function () {
-  const isAdmin = window.location.pathname.startsWith('/admin');
+  const isAdmin = window.location.pathname.includes('/admin');
   const appName = isAdmin ? 'PHAdmin' : 'Premiumhub';
-  const iconSrc = isAdmin ? '/assets/icons/phadmin-192.png' : '/assets/icons/premiumhub-192.png';
-  const swFile = isAdmin ? '/pwa/admin-sw.js' : '/pwa/main-sw.js';
-  const swScope = isAdmin ? '/admin/' : '/';
+  const basePath = isAdmin ? '..' : '.';
+  const iconSrc = isAdmin ? `${basePath}/assets/icons/phadmin-192.png` : `${basePath}/assets/icons/premiumhub-192.png`;
+  const swFile = isAdmin ? `${basePath}/pwa/admin-sw.js` : `${basePath}/pwa/main-sw.js`;
+  const swScope = './';
   const storageKey = isAdmin ? 'phadmin_install_dismissed' : 'premiumhub_install_dismissed';
 
-  // 1. Register Service Worker with separate scopes
-  if ('serviceWorker' in navigator) {
+  // 1. Register Service Worker
+  if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register(swFile, { scope: swScope })
         .then((reg) => {
@@ -27,14 +28,14 @@
     window.navigator.standalone === true;
 
   if (isStandalone) {
-    return; // Do not show install prompt when already installed
+    return;
   }
 
   // 3. Check dismissal cooldown (24 hours)
   const lastDismissed = localStorage.getItem(storageKey);
   const now = Date.now();
   if (lastDismissed && now - parseInt(lastDismissed, 10) < 24 * 60 * 60 * 1000) {
-    // Dismissed recently, do not annoy user immediately unless manually triggered
+    // Dismissed recently
   }
 
   let deferredPrompt = null;
@@ -44,7 +45,6 @@
     e.preventDefault();
     deferredPrompt = e;
 
-    // Show prompt if cooldown has expired or not dismissed
     if (!lastDismissed || now - parseInt(lastDismissed, 10) >= 24 * 60 * 60 * 1000) {
       showInstallPopup();
     }
@@ -133,7 +133,6 @@
     });
   }
 
-  // Expose helper to allow manual install button clicks in settings or admin
   window.triggerPWAInstall = function () {
     if (deferredPrompt) {
       deferredPrompt.prompt();
