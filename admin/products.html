@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Products — PHAdmin Portal</title>
+  <title>Payment Methods Configuration — PHAdmin Portal</title>
   <meta name="theme-color" content="#4B22CC">
   <link rel="manifest" href="../pwa/admin.webmanifest">
   <link rel="apple-touch-icon" href="../assets/icons/phadmin-192.png">
@@ -33,29 +33,17 @@
         <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
         <span>Dashboard</span>
       </a>
-      <a href="./products.html" class="sidebar-nav-item active">
+      <a href="./products.html" class="sidebar-nav-item">
         <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
         <span>Products</span>
-      </a>
-      <a href="./categories.html" class="sidebar-nav-item">
-        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-        <span>Categories</span>
       </a>
       <a href="./orders.html" class="sidebar-nav-item">
         <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
         <span>Orders & Verification</span>
       </a>
-      <a href="./invoices.html" class="sidebar-nav-item">
-        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-        <span>Invoices</span>
-      </a>
-      <a href="./customers.html" class="sidebar-nav-item">
-        <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-        <span>Customers & UIDs</span>
-      </a>
 
       <div class="nav-section-title">Configuration</div>
-      <a href="./payments.html" class="sidebar-nav-item">
+      <a href="./payments.html" class="sidebar-nav-item active">
         <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
         <span>Payment Methods</span>
       </a>
@@ -64,11 +52,6 @@
         <span>Website & Telegram</span>
       </a>
     </nav>
-
-    <div class="sidebar-footer">
-      <a href="../index.html" target="_blank" class="sidebar-nav-item" style="color:#00D2FF;">Visit Store ↗</a>
-      <button id="admin-logout-btn" class="sidebar-nav-item" style="color:#F87171;width:100%;text-align:left;background:none;border:none;">Log Out</button>
-    </div>
   </aside>
 
   <div class="admin-main">
@@ -77,121 +60,91 @@
         <button id="admin-menu-toggle" class="menu-toggle-btn" aria-label="Toggle Sidebar">
           <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
-        <span style="font-weight:700;color:var(--admin-text-main);">Product Catalog Manager</span>
-      </div>
-      <div class="admin-header-right">
-        <button id="open-add-product-modal" class="btn btn-primary btn-sm">+ Add New Product</button>
+        <span style="font-weight:700;color:var(--admin-text-main);">Payment Gateways & Accounts</span>
       </div>
     </header>
 
     <main class="admin-content">
-      <div class="table-card">
-        <div class="table-header">
-          <div style="display:flex;gap:10px;flex-wrap:wrap;flex:1;">
-            <div class="admin-search-box" style="flex:1;min-width:200px;">
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-              <input type="search" id="product-search" placeholder="Search by name, category...">
+      <div style="display:grid;grid-template-columns:1fr;gap:24px;">
+        
+        <!-- Crypto Configuration -->
+        <div class="card">
+          <h3 style="font-size:1.2rem;font-weight:800;color:var(--admin-text-main);margin-bottom:6px;">Crypto Payment Addresses (USDT, SOL, USDC)</h3>
+          <p style="font-size:0.85rem;color:var(--admin-text-sub);margin-bottom:18px;">Manage active crypto deposit addresses shown to customers during checkout.</p>
+
+          <form id="add-crypto-form" style="background:#FAF8FE;padding:16px;border-radius:12px;border:1px solid var(--admin-border);margin-bottom:20px;">
+            <div style="font-weight:700;margin-bottom:10px;font-size:0.95rem;">+ Add New Crypto Wallet</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Asset Name *</label>
+                <input type="text" id="crypto-name" class="form-input" placeholder="e.g. USDT, SOL, BTC" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Network / Chain *</label>
+                <input type="text" id="crypto-network" class="form-input" placeholder="e.g. BEP20, Solana, TRC20" required>
+              </div>
             </div>
-            <select id="product-category-filter" class="form-select" style="max-width:180px;padding:6px 12px;border-radius:9999px;">
-              <option value="all">All Categories</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="AI & Tools">AI & Tools</option>
-              <option value="Design">Design</option>
-              <option value="Finance">Finance</option>
-              <option value="Education">Education</option>
-            </select>
-          </div>
+            <div class="form-group">
+              <label class="form-label">Wallet Address *</label>
+              <input type="text" id="crypto-address" class="form-input" placeholder="0x... or Solana pubkey" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Customer Payment Instructions</label>
+              <input type="text" id="crypto-instructions" class="form-input" placeholder="e.g. Send exact USDT BEP20 equivalent.">
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">+ Save Crypto Wallet</button>
+          </form>
+
+          <div style="font-weight:700;font-size:0.95rem;margin-bottom:10px;">Configured Crypto Wallets:</div>
+          <div id="crypto-list">Loading crypto methods...</div>
         </div>
 
-        <div class="table-responsive">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Price (USDT & NGN)</th>
-                <th>Stock Status</th>
-                <th>Visibility</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="products-tbody">
-              <tr><td colspan="7" style="text-align:center;padding:24px;">Loading products...</td></tr>
-            </tbody>
-          </table>
+        <!-- Bank Accounts Configuration -->
+        <div class="card">
+          <h3 style="font-size:1.2rem;font-weight:800;color:var(--admin-text-main);margin-bottom:6px;">Naira Direct Bank Accounts</h3>
+          <p style="font-size:0.85rem;color:var(--admin-text-sub);margin-bottom:18px;">Manage company bank accounts for direct bank transfer settlements.</p>
+
+          <form id="add-bank-form" style="background:#FAF8FE;padding:16px;border-radius:12px;border:1px solid var(--admin-border);margin-bottom:20px;">
+            <div style="font-weight:700;margin-bottom:10px;font-size:0.95rem;">+ Add New Bank Account</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div class="form-group">
+                <label class="form-label">Bank Name *</label>
+                <input type="text" id="bank-name" class="form-input" placeholder="e.g. OPay, Moniepoint, GTBank" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Account Number *</label>
+                <input type="text" id="bank-number" class="form-input" placeholder="e.g. 8123456789" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Account Beneficiary Name *</label>
+              <input type="text" id="bank-holder" class="form-input" placeholder="e.g. PREMIUMHUB ENTERPRISE" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Transfer Instructions</label>
+              <input type="text" id="bank-instructions" class="form-input" placeholder="e.g. Use Profile UID as payment narration.">
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">+ Save Bank Account</button>
+          </form>
+
+          <div style="font-weight:700;font-size:0.95rem;margin-bottom:10px;">Configured Bank Accounts:</div>
+          <div id="bank-list">Loading bank accounts...</div>
         </div>
+
       </div>
     </main>
-  </div>
-
-  <!-- Add / Edit Product Modal -->
-  <div class="modal-backdrop" id="product-modal">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 class="modal-title" id="modal-prod-title">Add New Product</h3>
-        <button class="modal-close" id="close-product-modal">&times;</button>
-      </div>
-      <form id="product-form">
-        <input type="hidden" id="prod-edit-id">
-
-        <div class="form-group">
-          <label class="form-label">Product Name *</label>
-          <input type="text" id="prod-name" class="form-input" required placeholder="e.g. Spotify Premium 1-Year">
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div class="form-group">
-            <label class="form-label">Category *</label>
-            <input type="text" id="prod-category" class="form-input" required placeholder="e.g. Entertainment">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Price in USDT ($) *</label>
-            <input type="number" id="prod-price" class="form-input" required min="0" step="any" placeholder="10.50">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Old Price in USDT ($) (Optional)</label>
-          <input type="number" id="prod-old-price" class="form-input" min="0" step="any" placeholder="15.00">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Product Image URL</label>
-          <input type="url" id="prod-image" class="form-input" placeholder="https://images.unsplash.com/...">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Full Plan Description</label>
-          <textarea id="prod-desc" class="form-textarea" rows="3" placeholder="Enter plan specifications, activation method, and warranty..."></textarea>
-        </div>
-
-        <div style="display:flex;gap:20px;margin:12px 0;">
-          <label style="display:flex;align-items:center;gap:8px;font-size:0.9rem;cursor:pointer;">
-            <input type="checkbox" id="prod-available" checked style="width:18px;height:18px;accent-color:var(--admin-primary);">
-            <span>In Stock / Available</span>
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:0.9rem;cursor:pointer;">
-            <input type="checkbox" id="prod-active" checked style="width:18px;height:18px;accent-color:var(--admin-primary);">
-            <span>Published on Store</span>
-          </label>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block" style="margin-top:12px;">Save Product</button>
-      </form>
-    </div>
   </div>
 
   <script type="module" src="../js/install.js"></script>
   <script type="module">
     import { verifyAdminAuth, initAdminSidebar } from "../js/admin.js";
-    import { initProductsPage } from "../js/admin-products.js";
+    import { initAdminSettingsPage } from "../js/admin-settings.js";
 
     async function init() {
       const authResult = await verifyAdminAuth();
       if (!authResult) return;
       initAdminSidebar();
-      initProductsPage();
+      initAdminSettingsPage();
     }
 
     init();
