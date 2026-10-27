@@ -162,6 +162,8 @@ export async function initProductsPage() {
     document.getElementById("prod-old-price").value = prod.oldPrice || "";
     document.getElementById("prod-image").value = prod.image || "";
     document.getElementById("prod-desc").value = prod.description || "";
+    document.getElementById("prod-options").value = (prod.options || []).map(o => `${o.label}|${o.price}`).join("\n");
+    document.getElementById("prod-requirements").value = (prod.requiredFields || []).join("\n");
     document.getElementById("prod-available").checked = prod.available !== false;
     document.getElementById("prod-active").checked = prod.active !== false;
     document.getElementById("modal-prod-title").textContent = "Edit Product";
@@ -177,6 +179,11 @@ export async function initProductsPage() {
     const rate = getExchangeRate();
     const nairaPrice = calculateNairaPrice(usdtPrice, rate);
 
+    const options = (document.getElementById("prod-options")?.value || "").split(/\r?\n/).map(line => {
+      const parts = line.split("|");
+      return { label: (parts[0] || "").trim(), price: Number((parts[1] || "").trim()) };
+    }).filter(o => o.label && Number.isFinite(o.price) && o.price >= 0);
+    const requiredFields = (document.getElementById("prod-requirements")?.value || "").split(/\r?\n/).map(x => x.trim()).filter(Boolean).slice(0, 12);
     const prodData = {
       name: document.getElementById("prod-name").value.trim(),
       category: document.getElementById("prod-category").value.trim(),
@@ -187,6 +194,8 @@ export async function initProductsPage() {
       oldPrice: oldPrice,
       image: document.getElementById("prod-image").value.trim(),
       description: document.getElementById("prod-desc").value.trim(),
+      options,
+      requiredFields,
       available: document.getElementById("prod-available").checked,
       active: document.getElementById("prod-active").checked,
       updatedAt: serverTimestamp()
