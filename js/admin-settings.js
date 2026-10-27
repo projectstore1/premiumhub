@@ -57,6 +57,22 @@ export async function initAdminSettingsPage() {
     }
   });
 
+  await loadPromoCodes();
+  document.getElementById("promo-code-form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const code = document.getElementById("promo-code-name").value.trim().toUpperCase();
+    const discount = Number(document.getElementById("promo-discount").value);
+    const productId = document.getElementById("promo-product-id").value.trim();
+    const variantLabel = document.getElementById("promo-variant-label").value.trim();
+    const expiry = document.getElementById("promo-expires").value;
+    if (!code || !(discount > 0)) return showToast("Enter a valid code and discount", "error");
+    try {
+      await addDoc(collection(db, "promoCodes"), { code, discount, productId, variantLabel, active: true, expiresAt: expiry ? new Date(expiry + "T23:59:59") : null, createdAt: serverTimestamp() });
+      document.getElementById("promo-code-form").reset();
+      showToast("Promo code created", "success");
+      await loadPromoCodes();
+    } catch (err) { showToast(err.message || "Could not create promo code", "error"); }
+  });
   await loadPaymentMethods();
   await loadBanners();
   await loadNoticeSettings();
@@ -183,6 +199,17 @@ export async function initAdminSettingsPage() {
       showToast("Failed to queue job: " + err.message, "error");
     }
   });
+}
+
+async function loadPromoCodes() {
+  const list = document.getElementById("promo-code-list");
+  if (!list) return;
+  try {
+    const snap = await getDocs(collection(db, "promoCodes"));
+    if (snap.empty) { list.innerHTML = '<p style="color:var(--admin-text-sub);">No promo codes yet.</p>'; return; }
+    list.innerHTML = snap.docs.map(d => { const p=d.data(); return `<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px;border:1px solid var(--admin-border);border-radius:10px;margin-bottom:8px;"><div><strong>${String(p.code||'').replace(/[<>]/g,'')}</strong> — $${Number(p.discount||0).toFixed(2)} off <small style="display:block;color:var(--admin-text-sub);">${p.productId ? 'Product: '+p.productId : 'All products'}${p.variantLabel ? ' · Plan: '+p.variantLabel : ''}</small></div><button class="promo-toggle btn-sm" data-id="${d.id}" data-active="${p.active!==false}" style="background:${p.active!==false?'#DCFCE7':'#FEE2E2'};padding:6px 10px;border-radius:7px;">${p.active!==false?'Active — Disable':'Disabled — Enable'}</button></div>`; }).join('');
+    list.querySelectorAll('.promo-toggle').forEach(btn=>btn.addEventListener('click',async()=>{try{await updateDoc(doc(db,'promoCodes',btn.dataset.id),{active:btn.dataset.active!=='true'});await loadPromoCodes();}catch(e){showToast(e.message,'error');}}));
+  } catch (e) { list.innerHTML='<p>Unable to load promo codes. Check Firestore rules.</p>'; }
 }
 
 async function loadPaymentMethods() {
