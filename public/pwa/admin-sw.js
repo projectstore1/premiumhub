@@ -1,5 +1,5 @@
 // PHAdmin Service Worker (Admin scope: /admin/)
-const CACHE_NAME = 'phadmin-v1';
+const CACHE_NAME = 'phadmin-v3';
 const STATIC_ASSETS = [
   '/admin/index.html',
   '/admin/dashboard.html',
