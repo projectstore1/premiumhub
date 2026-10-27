@@ -118,7 +118,12 @@ export async function createOrder({
   paymentNetwork,
   paymentDetails,
   transactionReference,
-  paymentProofUrl = ""
+  paymentProofUrl = "",
+  selectedVariant = null,
+  customerRequirements = {},
+  promoCode = "",
+  discountUsdt = 0,
+  finalPriceUsdt = null
 }) {
   const currentUser = auth.currentUser;
   if (!currentUser) {
@@ -132,7 +137,21 @@ export async function createOrder({
   }
 
   const rate = getExchangeRate();
-  const priceUsdt = typeof product.price === 'number' ? product.price : parseFloat(product.price) || 0;
+  let verifiedVariant = null;
+  if (selectedVariant?.label) {
+    verifiedVariant = (product.options || []).find(o => o.label === selectedVariant.label);
+    if (!verifiedVariant) throw new Error("Selected plan is not valid for this product.");
+  }
+  const basePriceUsdt = Number(verifiedVariant?.price ?? product.price) || 0;
+  let verifiedDiscount = 0;
+  if (promoCode) {
+    const promoSnap = await getDocs(query(collection(db, "promoCodes"), where("code", "==", promoCode.toUpperCase()), where("active", "==", true)));
+    const promo = promoSnap.docs.map(d => d.data()).find(p => (!p.productId || p.productId === product.id) && (!p.variantLabel || p.variantLabel === verifiedVariant?.label) && (!p.expiresAt?.toDate || p.expiresAt.toDate() >= new Date()));
+    if (!promo) throw new Error("Promo code is not valid for this product/plan.");
+    verifiedDiscount = Math.min(basePriceUsdt, Math.max(0, Number(promo.discount) || 0));
+  }
+  const safeDiscount = verifiedDiscount;
+  const priceUsdt = Math.max(0, basePriceUsdt - safeDiscount);
   const priceNaira = calculateNairaPrice(priceUsdt, rate);
 
   // 2. Fetch User Profile for Numeric Profile UID
@@ -187,7 +206,12 @@ export async function createOrder({
     customerWhatsApp: customerWhatsApp || "",
     productId: product.id,
     productName: product.name,
+    productVariant: selectedVariant?.label || "Default plan",
     productImage: product.image || "",
+    customerRequirements: customerRequirements || {},
+    promoCode: promoCode || "",
+    discountUsdt: safeDiscount,
+    originalPriceUsdt: basePriceUsdt,
     price: priceUsdt, // Base USDT price
     priceUsdt: priceUsdt,
     priceNaira: priceNaira,
@@ -220,6 +244,7 @@ export async function createOrder({
       payload: {
         orderId: orderId,
         productName: product.name,
+        productVariant: verifiedVariant?.label || "Default plan",
         priceUsdt: priceUsdt,
         priceNaira: priceNaira,
         customerName: orderData.customerName,
