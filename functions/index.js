@@ -80,8 +80,8 @@ export const processNotificationJob = onDocumentCreated(
         message = [
           "NEW ORDER RECEIVED — PREMIUMHUB",
           `Order ID: ${p.orderId || 'N/A'}`,
-          `Product: ${p.productName || 'N/A'}`,
-          `Price: ₦${(p.price || 0).toLocaleString()}`,
+          `Product: ${p.productName || 'N/A'}${p.productVariant ? ' — ' + p.productVariant : ''}`,
+          `Price: $${Number(p.priceUsdt || 0).toFixed(2)} USDT / ₦${Number(p.priceNaira || 0).toLocaleString()}`,
           `Customer: ${p.customerName || 'N/A'}`,
           `Profile UID: #${p.profileUID || 'N/A'}`,
           `Email: ${p.email || 'N/A'}`,
