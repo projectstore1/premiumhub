@@ -103,6 +103,21 @@
           </form>
         </div>
 
+        <!-- Promo Code Management -->
+        <div class="card">
+          <h3 style="font-size:1.15rem;font-weight:800;color:var(--admin-text-main);margin-bottom:6px;">Promo Codes</h3>
+          <p style="font-size:.85rem;color:var(--admin-text-sub);margin-bottom:14px;">Create fixed-dollar discounts and restrict each code to a product ID and optional plan label.</p>
+          <form id="promo-code-form" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;">
+            <div class="form-group"><label class="form-label">Promo code *</label><input id="promo-code-name" class="form-input" required maxlength="30" placeholder="WELCOME3"></div>
+            <div class="form-group"><label class="form-label">Discount (USD) *</label><input id="promo-discount" class="form-input" type="number" min="0.01" step="0.01" required placeholder="3"></div>
+            <div class="form-group"><label class="form-label">Product ID (optional)</label><input id="promo-product-id" class="form-input" placeholder="Firestore product ID"></div>
+            <div class="form-group"><label class="form-label">Plan label (optional)</label><input id="promo-variant-label" class="form-input" placeholder="12 month"></div>
+            <div class="form-group"><label class="form-label">Expiry date (optional)</label><input id="promo-expires" class="form-input" type="date"></div>
+            <div style="display:flex;align-items:end;"><button class="btn btn-primary btn-sm" type="submit">Create Promo Code</button></div>
+          </form>
+          <div id="promo-code-list" style="margin-top:16px;"></div>
+        </div>
+
         <!-- Announcement Notice Box Settings -->
         <div class="card">
           <h3 style="font-size:1.15rem;font-weight:800;color:var(--admin-text-main);margin-bottom:6px;">Store Announcement Notice Bar</h3>
