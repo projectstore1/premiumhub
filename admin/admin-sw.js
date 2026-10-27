@@ -1,5 +1,5 @@
 // PHAdmin Service Worker
-const CACHE_NAME = 'phadmin-v2';
+const CACHE_NAME = 'phadmin-v3';
 
 self.addEventListener('install', (event) => {
   const BASE = new URL('../', self.location).href;
