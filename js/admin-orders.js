@@ -150,6 +150,7 @@ export async function initOrdersPage() {
           </div>
         </div>
 
+        ${order.customerRequirements && Object.keys(order.customerRequirements).length ? `<div style="background:#F3EEFF;border:1px solid var(--admin-border);padding:14px;border-radius:12px;"><div style="font-size:.8rem;font-weight:700;margin-bottom:8px;">Customer delivery requirements</div>${Object.entries(order.customerRequirements).map(([k,v])=>`<div style="font-size:.85rem;margin:4px 0;"><strong>${String(k).replace(/[<>]/g,'')}</strong>: ${String(v).replace(/[<>]/g,'')}</div>`).join('')}</div>` : ''}
         <div style="background:#FFF;border:1px solid var(--admin-border);padding:14px;border-radius:12px;">
           <div style="font-size:0.8rem;font-weight:700;color:var(--admin-text-sub);text-transform:uppercase;margin-bottom:6px;">Transaction Reference / Proof</div>
           <div style="font-family:monospace;background:#F1EFF8;padding:8px 12px;border-radius:6px;word-break:break-all;font-size:0.9rem;font-weight:600;">
@@ -184,8 +185,12 @@ export async function initOrdersPage() {
           </div>
 
           <div class="form-group" style="margin:0;">
-            <label class="form-label">Admin Internal Note</label>
-            <textarea id="modal-admin-note" class="form-textarea" rows="2" placeholder="e.g. Account credentials delivered via WhatsApp">${order.adminNote || ''}</textarea>
+            <label class="form-label">Customer delivery details (shown on their private invoice)</label>
+            <textarea id="modal-delivery-details" class="form-textarea" rows="4" placeholder="Product activation code, login instructions, account details, or delivery message">${order.deliveryDetails || ''}</textarea>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label class="form-label">Admin Internal Note (not shown on invoice)</label>
+            <textarea id="modal-admin-note" class="form-textarea" rows="2" placeholder="Internal note">${order.adminNote || ''}</textarea>
           </div>
 
           <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px;">
@@ -205,11 +210,13 @@ export async function initOrdersPage() {
       const newPayStatus = document.getElementById("modal-payment-status").value;
       const newOrderStatus = document.getElementById("modal-order-status").value;
       const newNote = document.getElementById("modal-admin-note").value.trim();
+      const deliveryDetails = document.getElementById("modal-delivery-details").value.trim();
 
       try {
         await updateDoc(doc(db, "orders", order.orderId), {
           paymentStatus: newPayStatus,
           orderStatus: newOrderStatus,
+          deliveryDetails,
           adminNote: newNote,
           updatedAt: serverTimestamp()
         });
