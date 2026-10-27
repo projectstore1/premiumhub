@@ -14,37 +14,67 @@ import { showToast } from "./auth.js";
 
 // Check if user is an authorized admin
 export async function verifyAdminAuth() {
-  await fetchExchangeRate();
   return new Promise((resolve) => {
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        if (!window.location.pathname.endsWith("/admin/") && !window.location.pathname.endsWith("/admin/index.html")) {
-          window.location.href = "./index.html";
-        }
+        window.location.href = "./index.html";
         resolve(null);
         return;
       }
-
       try {
-        const userDocRef = doc(db, "users", user.uid);
-        // Ensure user has admin privileges in Firestore
-        await setDoc(userDocRef, {
-          uid: user.uid,
-          email: user.email || "",
-          displayName: user.displayName || "Administrator",
-          role: "admin",
-          lastActive: serverTimestamp()
-        }, { merge: true });
-
+        // Never grant admin rights merely because a user signed in.
+        const adminSnap = await getDoc(doc(db, "admins", user.uid));
+        if (!adminSnap.exists() || adminSnap.data().active !== true) {
+          showToast("This account is not authorized for PHAdmin.", "error");
+          await signOut(auth);
+          window.location.href = "./index.html";
+          resolve(null);
+          return;
+        }
         resolve({ user, isAdmin: true, role: "admin" });
+        initAdminOrderNotifications();
       } catch (err) {
-        console.warn("Admin role sync notice:", err);
-        // Authenticated user in admin portal is permitted
-        resolve({ user, isAdmin: true, role: "admin" });
+        console.error("Admin verification failed:", err);
+        showToast("Could not verify admin permissions.", "error");
+        resolve(null);
       }
     });
   });
 }
+
+// Browser notifications for new orders while PHAdmin is open.
+let adminOrderUnsubscribe = null;
+async function initAdminOrderNotifications() {
+  if (adminOrderUnsubscribe) return;
+  if (!("Notification" in window)) return;
+  if (Notification.permission === "default") {
+    try { await Notification.requestPermission(); } catch (_) {}
+  }
+  const { onSnapshot, collection, query, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js");
+  let firstSnapshot = true;
+  const knownStatuses = new Map();
+  adminOrderUnsubscribe = onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(100)), (snap) => {
+    if (firstSnapshot) { snap.docs.forEach(d => { const o=d.data(); knownStatuses.set(d.id, `${o.orderStatus||'Pending'}|${o.paymentStatus||'Unverified'}`); }); firstSnapshot = false; return; }
+    snap.docChanges().forEach(change => {
+      const order = change.doc.data();
+      const previous = knownStatuses.get(change.doc.id);
+      const status = `${order.orderStatus||'Pending'}|${order.paymentStatus||'Unverified'}`;
+      if (Notification.permission === "granted" && change.type === "added") {
+        const title = "New order received";
+        const body = `${order.productName || "Product"}${order.productVariant ? " — " + order.productVariant : ""} · ${order.orderId || change.doc.id}`;
+        if (navigator.serviceWorker?.controller) navigator.serviceWorker.ready.then(reg => reg.showNotification(title, { body, icon: "../assets/icons/phadmin-192.png", tag: `order-${change.doc.id}`, data: { url: "./orders.html" } })).catch(() => new Notification(title, { body }));
+        else new Notification(title, { body });
+      } else if (previous && previous !== status && Notification.permission === "granted") {
+        const title = "Order status updated";
+        const body = `${order.orderId || change.doc.id}: ${order.orderStatus || 'Pending'} · Payment ${order.paymentStatus || 'Unverified'}`;
+        if (navigator.serviceWorker?.controller) navigator.serviceWorker.ready.then(reg => reg.showNotification(title, { body, icon: "../assets/icons/phadmin-192.png", tag: `order-status-${change.doc.id}` })).catch(() => new Notification(title, { body }));
+        else new Notification(title, { body });
+      }
+      knownStatuses.set(change.doc.id, status);
+    });
+  }, err => console.warn("Order notification listener:", err));
+}
+
 
 // Sidebar toggle setup
 export function initAdminSidebar() {
