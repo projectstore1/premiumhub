@@ -1,5 +1,5 @@
 // Premiumhub Service Worker
-const CACHE_NAME = 'premiumhub-v1';
+const CACHE_NAME = 'premiumhub-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
