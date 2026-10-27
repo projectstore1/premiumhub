@@ -143,3 +143,13 @@
     }
   };
 })();
+
+
+// Persistent light/dark mode toggle shared by the storefront and PHAdmin.
+(function initThemeToggle(){
+  const key='premiumhub-theme';
+  const apply=theme=>{document.documentElement.dataset.theme=theme;document.querySelectorAll('[data-theme-toggle]').forEach(b=>{b.textContent=theme==='dark'?'☀️ Light mode':'🌙 Dark mode';b.setAttribute('aria-pressed',String(theme==='dark'));});};
+  apply(localStorage.getItem(key)||'light');
+  const add=()=>{if(!document.body||document.getElementById('ph-theme-toggle'))return;const b=document.createElement('button');b.id='ph-theme-toggle';b.type='button';b.dataset.themeToggle='true';b.className='ph-theme-toggle';b.style.cssText='position:fixed;right:14px;bottom:86px;z-index:9998;border:1px solid var(--color-border,#ddd);border-radius:999px;padding:10px 14px;background:var(--color-card-bg,#fff);color:var(--color-text-main,#222);box-shadow:0 6px 22px #0002;font-weight:700;cursor:pointer';b.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';localStorage.setItem(key,next);apply(next);});document.body.appendChild(b);};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add);else add();
+})();
