@@ -45,6 +45,14 @@
         </div>
 
         <form id="checkout-form">
+          <div id="product-choice-wrap" class="form-group" style="display:none;margin-bottom:20px;">
+            <label class="form-label" for="product-choice">Choose plan / duration *</label>
+            <select id="product-choice" class="form-input" required></select>
+          </div>
+          <div id="product-requirements-wrap" class="form-group" style="display:none;margin-bottom:20px;">
+            <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:10px;">Delivery requirements</h3>
+            <div id="product-requirements-fields"></div>
+          </div>
           <!-- Step 1: Customer Contact Information -->
           <div style="margin-bottom:24px;">
             <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
@@ -109,6 +117,11 @@
             </div>
           </div>
 
+          <div class="form-group" style="margin-bottom:24px;">
+            <label class="form-label" for="promo-code">Promo code (optional)</label>
+            <div style="display:flex;gap:8px;"><input type="text" id="promo-code" class="form-input" placeholder="Enter promo code"><button type="button" id="apply-promo" class="btn btn-secondary">Apply</button></div>
+            <small id="promo-message" style="display:block;margin-top:6px;color:var(--color-text-sub);"></small>
+          </div>
           <!-- Step 3: Transaction Reference Input -->
           <div style="margin-bottom:24px;">
             <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
@@ -145,6 +158,10 @@
     let paymentConfig = null;
     let selectedMethod = null;
     let activePaymentType = 'crypto';
+    let selectedVariant = null;
+    let appliedPromo = null;
+    let currentPrice = 0;
+    let customerRequirements = {};
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -185,6 +202,27 @@
         return;
       }
 
+      selectedVariant = (currentProduct.options || []).length ? currentProduct.options[0] : null;
+      currentPrice = Number(selectedVariant?.price ?? currentProduct.price) || 0;
+      const choiceWrap = document.getElementById("product-choice-wrap");
+      const choice = document.getElementById("product-choice");
+      if ((currentProduct.options || []).length && choice && choiceWrap) {
+        choiceWrap.style.display = "block";
+        choice.innerHTML = currentProduct.options.map((o,i) => `<option value="${i}">${o.label} — $${Number(o.price).toFixed(2)}</option>`).join("");
+        choice.addEventListener("change", () => {
+          selectedVariant = currentProduct.options[Number(choice.value)];
+          currentPrice = Number(selectedVariant?.price ?? currentProduct.price) || 0;
+          appliedPromo = null;
+          document.getElementById("promo-message").textContent = "";
+          updateProductPrice();
+        });
+      }
+      const reqWrap = document.getElementById("product-requirements-wrap");
+      const reqFields = document.getElementById("product-requirements-fields");
+      if ((currentProduct.requiredFields || []).length && reqWrap && reqFields) {
+        reqWrap.style.display = "block";
+        reqFields.innerHTML = currentProduct.requiredFields.map((label,i) => `<div class="form-group"><label class="form-label" for="delivery-field-${i}">${label.replace(/[<>]/g,'')}</label><input class="form-input delivery-requirement" id="delivery-field-${i}" data-label="${label.replace(/["<>]/g,'')}" required maxlength="500" placeholder="Enter ${label.replace(/[<>]/g,'')}"></div>`).join("");
+      }
       const preview = document.getElementById("order-product-preview");
       if (preview) {
         preview.innerHTML = `
@@ -192,8 +230,7 @@
           <div style="flex:1;">
             <div style="font-weight:700;font-size:1.05rem;color:var(--color-text-main);">${currentProduct.name}</div>
             <div style="display:flex;align-items:baseline;gap:8px;margin-top:2px;">
-              <span style="font-size:1.25rem;font-weight:800;color:var(--color-primary);">${formatPrice(currentProduct.price)}</span>
-              ${currentProduct.oldPrice ? `<span style="font-size:0.85rem;color:var(--color-text-sub);text-decoration:line-through;">${formatPrice(currentProduct.oldPrice)}</span>` : ''}
+              <span id="checkout-price-label" style="font-size:1.25rem;font-weight:800;color:var(--color-primary);">${formatPrice(currentPrice)}</span>
             </div>
           </div>
         `;
@@ -201,7 +238,39 @@
 
       paymentConfig = await fetchPaymentMethods();
       renderPaymentOptions();
+      updateProductPrice();
     }
+
+    function updateProductPrice() {
+      const discount = appliedPromo?.discount || 0;
+      const payable = Math.max(0, currentPrice - discount);
+      const label = document.getElementById("checkout-price-label");
+      if (label) label.textContent = discount ? `$${payable.toFixed(2)} USDT (promo −$${discount.toFixed(2)})` : formatPrice(currentPrice);
+      if (selectedMethod) selectMethod(selectedMethod, activePaymentType);
+    }
+
+    document.getElementById("apply-promo")?.addEventListener("click", async () => {
+      const code = document.getElementById("promo-code").value.trim().toUpperCase();
+      const message = document.getElementById("promo-message");
+      appliedPromo = null;
+      if (!code) { message.textContent = "Enter a promo code first."; return; }
+      try {
+        const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js");
+        const snap = await getDocs(query(collection(db, "promoCodes"), where("code", "==", code), where("active", "==", true)));
+        const promo = snap.docs.map(d => ({id:d.id,...d.data()})).find(p => (!p.productId || p.productId === currentProduct.id) && (!p.variantLabel || p.variantLabel === selectedVariant?.label));
+        if (!promo) throw new Error("This promo code is invalid or does not apply to this product/plan.");
+        if (promo.expiresAt?.toDate && promo.expiresAt.toDate() < new Date()) throw new Error("This promo code has expired.");
+        const discount = Math.min(currentPrice, Math.max(0, Number(promo.discount) || 0));
+        if (!discount) throw new Error("This promo code has no valid discount.");
+        appliedPromo = { code, discount, id: promo.id };
+        message.textContent = `Promo applied: $${discount.toFixed(2)} off.`;
+        message.style.color = "#16803c";
+        updateProductPrice();
+      } catch (err) {
+        message.textContent = err.message || "Could not validate promo code.";
+        message.style.color = "#dc2626";
+      }
+    });
 
     function renderPaymentOptions() {
       const cryptoContainer = document.getElementById("crypto-methods-container");
@@ -259,7 +328,8 @@
       const destLabel = document.getElementById("dest-label");
       const destValue = document.getElementById("dest-value");
 
-      const usdt = currentProduct ? (Number(currentProduct.price) || 0) : 0;
+      const rawPrice = currentProduct ? (Number(currentPrice) || 0) : 0;
+      const usdt = Math.max(0, rawPrice - (appliedPromo?.discount || 0));
       const naira = calculateNairaPrice(usdt);
       if (type === 'crypto') {
         destLabel.textContent = `Wallet Address (${method.network}):`;
@@ -330,7 +400,12 @@
           paymentMethod: methodName,
           paymentNetwork: selectedMethod.network || "Bank NGN",
           paymentDetails: selectedMethod.address || selectedMethod.accountNumber,
-          transactionReference: txRef
+          transactionReference: txRef,
+          selectedVariant: selectedVariant || null,
+          customerRequirements: Object.fromEntries([...document.querySelectorAll(".delivery-requirement")].map(el => [el.dataset.label, el.value.trim()])),
+          promoCode: appliedPromo?.code || "",
+          discountUsdt: appliedPromo?.discount || 0,
+          finalPriceUsdt: Math.max(0, currentPrice - (appliedPromo?.discount || 0))
         });
 
         showToast("Order placed successfully! Redirecting...", "success");
