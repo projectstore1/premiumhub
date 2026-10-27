@@ -73,6 +73,8 @@
     import { formatPrice } from "./js/products.js";
 
     const container = document.getElementById("orders-list-container");
+    const seenStatuses = new Map();
+    let firstOrdersSnapshot = true;
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
@@ -85,7 +87,28 @@
         slot.innerHTML = `<a href="./profile.html" class="header-btn header-btn-ghost">${user.displayName || 'Profile'}</a>`;
       }
 
+      if ('Notification' in window && Notification.permission === 'default') {
+        const permissionBtn = document.createElement('button'); permissionBtn.className='btn btn-secondary btn-sm'; permissionBtn.textContent='Enable order notifications'; permissionBtn.style.margin='0 0 14px'; permissionBtn.onclick=async()=>{const result=await Notification.requestPermission();permissionBtn.textContent=result==='granted'?'Notifications enabled':'Notifications not enabled';}; container.parentNode.insertBefore(permissionBtn,container);
+      }
       subscribeCustomerOrders(user.uid, (orders) => {
+        if (firstOrdersSnapshot) {
+          orders.forEach(o => seenStatuses.set(o.id, `${o.orderStatus||'Pending'}|${o.paymentStatus||'Unverified'}`));
+          firstOrdersSnapshot = false;
+        } else {
+          orders.forEach(o => {
+            const status = `${o.orderStatus||'Pending'}|${o.paymentStatus||'Unverified'}`;
+            const previous = seenStatuses.get(o.id);
+            if (previous && previous !== status) {
+              const message = `${o.productName || 'Your order'}: ${o.orderStatus || 'Pending'} · Payment ${o.paymentStatus || 'Unverified'}`;
+              if ('Notification' in window && Notification.permission === 'granted') {
+                if (navigator.serviceWorker) navigator.serviceWorker.ready.then(reg => reg.showNotification('Premiumhub order update', {body:message, icon:'./assets/icons/premiumhub-192.png', tag:`status-${o.id}`})).catch(()=>new Notification('Premiumhub order update',{body:message}));
+                else new Notification('Premiumhub order update', { body: message });
+              }
+              const toast=document.createElement('div'); toast.className='toast toast-info'; toast.textContent=message; toast.style.cssText='position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:99999;background:#4B22CC;color:#fff;padding:12px 18px;border-radius:12px;box-shadow:0 8px 28px #0002;max-width:90vw'; document.body.appendChild(toast); setTimeout(()=>toast.remove(),6000);
+            }
+            seenStatuses.set(o.id,status);
+          });
+        }
         if (!orders.length) {
           container.innerHTML = `
             <div class="card" style="text-align:center;padding:48px 20px;">
