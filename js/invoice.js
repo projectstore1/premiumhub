@@ -21,15 +21,11 @@ export async function getInvoiceData(orderId) {
     if (order.userId === currentUser.uid) {
       return order;
     }
-    // Check if user has admin role
-    const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-    if (userDoc.exists() && userDoc.data().role === 'admin') {
-      return order;
-    }
+    // Admin access requires an explicit admin record; user profile role is not trusted.
+    const adminDoc = await getDoc(doc(db, "admins", currentUser.uid));
+    if (adminDoc.exists() && adminDoc.data().active === true) return order;
   }
-
-  // If public view is allowed with direct link, return safe sanitized data
-  return order;
+  throw new Error("Sign in with the account that owns this order to view its invoice.");
 }
 
 // Copy invoice link to clipboard
