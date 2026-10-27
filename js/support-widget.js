@@ -18,19 +18,19 @@ import { fetchSupportSettings } from "./products.js";
 
     <!-- Support Modal Popup -->
     <div id="ph-support-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;align-items:center;justify-content:center;padding:16px;">
-      <div style="background:#FFFFFF;border-radius:20px;padding:24px;max-width:380px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,0.25);border:1px solid #E8E5F2;position:relative;animation:fadeIn 0.2s ease;">
+      <div style="background:var(--color-card-bg,#FFFFFF);border-radius:20px;padding:24px;max-width:380px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,0.25);border:1px solid #E8E5F2;position:relative;animation:fadeIn 0.2s ease;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
           <div style="display:flex;align-items:center;gap:10px;">
             <div style="width:36px;height:36px;border-radius:10px;background:#F3EEFF;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">💬</div>
             <div>
-              <div style="font-weight:800;font-size:1.1rem;color:#211B35;">Need Assistance?</div>
-              <div style="font-size:0.78rem;color:#77718A;">24/7 Dedicated Support Desk</div>
+              <div style="font-weight:800;font-size:1.1rem;color:var(--color-text-main,#211B35);">Need Assistance?</div>
+              <div style="font-size:0.78rem;color:var(--color-text-sub,#77718A);">24/7 Dedicated Support Desk</div>
             </div>
           </div>
-          <button id="ph-support-close" style="background:none;border:none;font-size:1.5rem;color:#77718A;cursor:pointer;padding:4px 8px;line-height:1;">&times;</button>
+          <button id="ph-support-close" style="background:none;border:none;font-size:1.5rem;color:var(--color-text-sub,#77718A);cursor:pointer;padding:4px 8px;line-height:1;">&times;</button>
         </div>
 
-        <p style="font-size:0.85rem;color:#77718A;margin-bottom:18px;line-height:1.5;">
+        <p style="font-size:0.85rem;color:var(--color-text-sub,#77718A);margin-bottom:18px;line-height:1.5;">
           Have questions about your order, automated verification, or crypto payments? Connect directly with our team:
         </p>
 
