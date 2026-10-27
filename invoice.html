@@ -129,6 +129,10 @@
         </tbody>
       </table>
 
+      <section id="invoice-delivery-section" style="display:none;margin:0 0 22px;padding:16px;border:1px solid #D2C8FF;border-radius:12px;background:#F8F5FF;">
+        <h3 style="font-size:.95rem;font-weight:800;color:#4B22CC;margin-bottom:8px;">Product delivery details</h3>
+        <div id="invoice-delivery-details" style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:.9rem;color:#211B35;"></div>
+      </section>
       <!-- Total & Reference -->
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:1px solid #EAE5F7;padding-bottom:20px;margin-bottom:20px;">
         <div style="max-width:380px;">
@@ -180,8 +184,18 @@
         document.getElementById("cust-uid").textContent = `#${order.profileUID || '0000'}`;
         document.getElementById("cust-email").textContent = order.customerEmail || "No Email";
         document.getElementById("cust-phone").textContent = `WhatsApp: ${order.customerWhatsApp || 'N/A'}`;
-        document.getElementById("item-name").textContent = order.productName;
+        document.getElementById("item-name").textContent = `${order.productName}${order.productVariant && order.productVariant !== 'Default plan' ? ' — ' + order.productVariant : ''}`;
         document.getElementById("item-method").textContent = `Payment via: ${order.paymentMethod || 'Crypto / Bank'}`;
+        if (order.deliveryDetails) {
+          document.getElementById("invoice-delivery-details").textContent = order.deliveryDetails;
+          document.getElementById("invoice-delivery-section").style.display = "block";
+        }
+        if (order.customerRequirements && Object.keys(order.customerRequirements).length) {
+          const req = Object.entries(order.customerRequirements).map(([k,v]) => `${k}: ${v}`).join("\n");
+          const el = document.getElementById("invoice-delivery-details");
+          el.textContent = (el.textContent ? el.textContent + "\n\n" : "") + "Submitted information:\n" + req;
+          document.getElementById("invoice-delivery-section").style.display = "block";
+        }
         document.getElementById("item-price").textContent = formatPrice(order.price);
         document.getElementById("inv-total").textContent = formatPrice(order.price);
         document.getElementById("inv-reference").textContent = order.transactionReference || "None";
