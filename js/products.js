@@ -15,24 +15,33 @@ import {
 // Exchange Rate Configuration (1 USDT / USD = 1,440 Naira default)
 export const DEFAULT_USD_TO_NAIRA_RATE = 1440;
 let cachedExchangeRate = DEFAULT_USD_TO_NAIRA_RATE;
+let exchangeRateFetchedAt = 0;
+let exchangeRateRequest = null;
 
 export async function fetchExchangeRate() {
-  try {
+  if (Date.now() - exchangeRateFetchedAt < 60_000) return cachedExchangeRate;
+  if (exchangeRateRequest) return exchangeRateRequest;
+  exchangeRateRequest = (async () => { try {
     const snap = await getDoc(doc(db, "siteSettings", "currency"));
     if (snap.exists() && snap.data().usdToNairaRate) {
       cachedExchangeRate = parseFloat(snap.data().usdToNairaRate) || DEFAULT_USD_TO_NAIRA_RATE;
+      exchangeRateFetchedAt = Date.now();
       return cachedExchangeRate;
     }
     // Also check support doc
     const suppSnap = await getDoc(doc(db, "siteSettings", "support"));
     if (suppSnap.exists() && suppSnap.data().usdToNairaRate) {
       cachedExchangeRate = parseFloat(suppSnap.data().usdToNairaRate) || DEFAULT_USD_TO_NAIRA_RATE;
+      exchangeRateFetchedAt = Date.now();
       return cachedExchangeRate;
     }
   } catch (err) {
     console.warn("Using default exchange rate (1$ = 1440 NGN):", err);
   }
-  return DEFAULT_USD_TO_NAIRA_RATE;
+  exchangeRateFetchedAt = Date.now();
+  return cachedExchangeRate || DEFAULT_USD_TO_NAIRA_RATE;
+  })();
+  try { return await exchangeRateRequest; } finally { exchangeRateRequest = null; }
 }
 
 export function getExchangeRate() {
@@ -81,9 +90,9 @@ export async function fetchSupportSettings() {
     if (snap.exists()) {
       const data = snap.data();
       return {
-        telegram: data.telegram || "@MD_ABDULLAH",
+        telegram: data.telegram ? (data.telegram.startsWith('http') ? '@' + (new URL(data.telegram)).pathname.split('/').filter(Boolean).pop() : data.telegram) : "@MD_ABDULLAH",
         telegramUrl: data.telegramUrl || (data.telegram?.startsWith('http') ? data.telegram : `https://t.me/${(data.telegram || 'MD_ABDULLAH').replace('@', '')}`),
-        whatsapp: data.whatsapp || "+2348000000000",
+        whatsapp: data.whatsapp ? (data.whatsapp.startsWith('http') ? (new URL(data.whatsapp)).pathname.replace(/[^0-9]/g,'') : data.whatsapp) : "+2348000000000",
         whatsappUrl: data.whatsappUrl || (data.whatsapp?.startsWith('http') ? data.whatsapp : `https://wa.me/${(data.whatsapp || '2348000000000').replace(/[^0-9]/g, '')}`),
         usdToNairaRate: parseFloat(data.usdToNairaRate) || DEFAULT_USD_TO_NAIRA_RATE
       };
