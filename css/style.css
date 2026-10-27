@@ -969,3 +969,12 @@ img {
   line-height: 1;
   color: var(--color-text-sub);
 }
+
+
+/* Premiumhub / PHAdmin crisp dark mode */
+:root[data-theme="dark"] { color-scheme: dark; --color-bg:#11101a; --color-card-bg:#1b1928; --color-white:#1b1928; --color-text-main:#f4f1ff; --color-text-sub:#b5aecb; --color-border:#39334e; --color-light-purple:#2b2342; --color-light-purple-hover:#393052; --admin-bg:#11101a; --admin-card-bg:#1b1928; --admin-border:#39334e; --admin-text-main:#f4f1ff; --admin-text-sub:#b5aecb; }
+:root[data-theme="dark"] body { background:var(--color-bg,var(--admin-bg)); color:var(--color-text-main,var(--admin-text-main)); }
+:root[data-theme="dark"] .card, :root[data-theme="dark"] .modal-dialog, :root[data-theme="dark"] .form-input, :root[data-theme="dark"] .form-textarea, :root[data-theme="dark"] .form-select, :root[data-theme="dark"] input, :root[data-theme="dark"] textarea, :root[data-theme="dark"] select { background:#201d2e; color:#f4f1ff; border-color:#39334e; }
+:root[data-theme="dark"] .header, :root[data-theme="dark"] .footer, :root[data-theme="dark"] .admin-header { background:#181624; border-color:#39334e; }
+:root[data-theme="dark"] table, :root[data-theme="dark"] td, :root[data-theme="dark"] th { border-color:#39334e; color:#f4f1ff; }
+.ph-theme-toggle { font-size:12px; }
